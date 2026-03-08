@@ -1,12 +1,110 @@
 seasons.texture_plan = {}
 
--- Placeholder planning hooks for seasonal visuals.
--- Expected future outputs:
--- - leaf color transition weighting
--- - grass browning weighting
--- - per-node probabilities derived from state
+-- Per-leaf-block config keyed by base node name.
+-- Uses the 3 core variables: thermal, moisture, dthermal_dt.
+seasons.texture_plan.leaf_blocks = {
+	["mcl_core:leaves"] = {
+		base = "mcl_core:leaves",
+		variants = {
+			spring = "seasons:oak_leaves_spring",
+			summer = "mcl_core:leaves",
+			fall = "seasons:oak_leaves_fall",
+			winter = "seasons:oak_leaves_winter",
+		},
+		colors = {
+			spring = "#74C85B",
+			fall = "#B98334",
+			winter = "#93A29A",
+		},
+		params = {
+			-- Roughly quarter-like behavior in medium/temperate biomes.
+			winter_thermal_start = 0.03,
+			winter_thermal_full = -0.12,
+			summer_thermal_start = 0.30,
+			summer_thermal_full = 0.48,
+			spring_band_min = -0.05,
+			spring_band_max = 0.36,
+			fall_band_min = -0.02,
+			fall_band_max = 0.42,
+			dthermal_scale = 0.22,
+			moisture_fall_bonus = 0.20,
+			transition_rate = 0.20,
+		},
+	}
+}
 
-function seasons.texture_plan.get_leaf_fall_probability(state, k)
-	k = k or 1.0
-	return math.max(0, math.min(1, seasons.model.fallness(state) * k))
+seasons.texture_plan.node_to_leaf_block = {}
+
+local function register_node_lookup(base_name, cfg)
+	seasons.texture_plan.node_to_leaf_block[base_name] = cfg
+	for _, nn in pairs(cfg.variants) do
+		seasons.texture_plan.node_to_leaf_block[nn] = cfg
+	end
+end
+
+for base_name, cfg in pairs(seasons.texture_plan.leaf_blocks) do
+	register_node_lookup(base_name, cfg)
+end
+
+local function clamp01(v)
+	return seasons.model.clamp01(v)
+end
+
+function seasons.texture_plan.weights_for_leaf(cfg, state)
+	local p = cfg.params
+	local thermal = state.thermal
+	local moisture = state.moisture
+	local dthermal = state.dthermal_dt
+
+	local winter = clamp01((p.winter_thermal_start - thermal) / (p.winter_thermal_start - p.winter_thermal_full))
+	local summer = clamp01((thermal - p.summer_thermal_start) / (p.summer_thermal_full - p.summer_thermal_start))
+
+	local spring_dir = clamp01(math.max(0, dthermal) / p.dthermal_scale)
+	local fall_dir = clamp01(math.max(0, -dthermal) / p.dthermal_scale)
+
+	local spring_band = seasons.model.band(thermal, p.spring_band_min, p.spring_band_max)
+	local fall_band = seasons.model.band(thermal, p.fall_band_min, p.fall_band_max)
+
+	local spring = spring_dir * spring_band
+	local fall = fall_dir * fall_band * (1 + p.moisture_fall_bonus * clamp01(moisture))
+
+	-- Keep warm/cold regimes dominant.
+	spring = spring * (1 - winter) * (1 - summer)
+	fall = fall * (1 - winter) * (1 - summer)
+
+	local w = {
+		winter = winter,
+		summer = summer,
+		spring = spring,
+		fall = fall,
+	}
+
+	local max_name = "summer"
+	local max_v = -1
+	for name, val in pairs(w) do
+		if val > max_v then
+			max_v = val
+			max_name = name
+		end
+	end
+
+	return w, max_name
+end
+
+function seasons.texture_plan.pick_target_node(node_name, state)
+	local cfg = seasons.texture_plan.node_to_leaf_block[node_name]
+	if not cfg then return nil end
+
+	local weights, best = seasons.texture_plan.weights_for_leaf(cfg, state)
+	local target = cfg.variants[best]
+	if not target then
+		return nil
+	end
+
+	return {
+		cfg = cfg,
+		weights = weights,
+		best = best,
+		target = target,
+	}
 end

@@ -1,4 +1,4 @@
-# Architecture Skeleton
+# Architecture
 
 ## Data Flow
 
@@ -21,5 +21,8 @@
 
 ## Current Integration Status
 
-- Voxelibre biome bridge: stubbed.
+- Voxelibre biome bridge: active for biome sampling + profile resolution.
+- Texture adaptation: active prototype for oak leaves (`mcl_core:leaves`) using seasonal variant nodes.
+- Updater: periodic player-area scan with budget controls.
+- Commands: active (`/seasons_state`, `/seasons_set_day`, `/seasons_set_season`, `/seasons_force_update`).
 - Weather integration: placeholder only.
