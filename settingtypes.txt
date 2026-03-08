@@ -1,0 +1,2 @@
+seasons_year_days (Season Year Length In In-Game Days) int 100 4 10000
+seasons_debug_log (Enable Seasons Debug Logging) bool false
