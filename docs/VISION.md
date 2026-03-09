@@ -9,7 +9,7 @@ We are building a seasons mod centered on smooth, continuous signals instead of 
 
 ## Year Model
 
-- Year length: **100 in-game days**.
+- Year length: **20 in-game days** by default (configurable).
 - Smooth phase variable:
   - `year_pos = ((day_count + timeofday) % 100) / 100`
 

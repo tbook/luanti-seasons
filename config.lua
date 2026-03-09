@@ -1,8 +1,8 @@
 seasons.config = {}
 
-seasons.config.year_days = tonumber(minetest.settings:get("seasons_year_days")) or 100
+seasons.config.year_days = tonumber(minetest.settings:get("seasons_year_days")) or 20
 seasons.config.debug_log = minetest.settings:get_bool("seasons_debug_log", false)
-seasons.config.leaf_epoch_days = tonumber(minetest.settings:get("seasons_leaf_epoch_days")) or 2.0
+seasons.config.leaf_epoch_days = tonumber(minetest.settings:get("seasons_leaf_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.02)
 
 seasons.config.leaf_update_interval = tonumber(minetest.settings:get("seasons_leaf_update_interval")) or 2.0
 seasons.config.leaf_update_budget = tonumber(minetest.settings:get("seasons_leaf_update_budget")) or 160
@@ -14,7 +14,7 @@ seasons.config.flower_update_budget = tonumber(minetest.settings:get("seasons_fl
 seasons.config.flower_scan_radius = tonumber(minetest.settings:get("seasons_flower_scan_radius")) or 24
 
 seasons.config.weather_bias_enable = minetest.settings:get_bool("seasons_weather_bias_enable", true)
-seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or 0.5
+seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)
 seasons.config.weather_snow_bias_strength = tonumber(minetest.settings:get("seasons_weather_snow_bias_strength")) or 0.85
 
 -- Virtual day offset for testing and command-driven season forcing.

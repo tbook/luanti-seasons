@@ -8,7 +8,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 
 ## Current Features
 
-- 100-day year (configurable).
+- 20-day year by default (configurable).
 - Biome-driven continuous state:
   - `thermal`
   - `moisture`
