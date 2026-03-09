@@ -23,7 +23,7 @@ seasons.texture_plan.leaf_blocks = {
 			-- hsl hue is a relative shift, so use negative values to move green foliage toward orange/red.
 			fall_red = "^[hsl:-96:46:-16^[colorizehsl:22:38:-6^[mask:default_leaves.png",
 			fall_yellow = "^[hsl:-72:56:-14^[colorizehsl:38:48:-6^[mask:default_leaves.png",
-			winter = "^[multiply:#6F5A42^[colorize:#AFA9A2:95",
+			winter = "^[multiply:#70583F^[colorize:#9B7E60:88",
 		},
 		params = {
 			-- Roughly quarter-like behavior in medium/temperate biomes.
@@ -40,6 +40,36 @@ seasons.texture_plan.leaf_blocks = {
 			transition_rate = 0.20,
 		},
 	}
+}
+
+seasons.texture_plan.leaf_blocks["mcl_core:dirt_with_grass"] = {
+	base = "mcl_core:dirt_with_grass",
+	variants = {
+		spring = "seasons:dirt_with_grass_spring",
+		summer = "mcl_core:dirt_with_grass",
+		fall = "mcl_core:dirt_with_grass", -- unchanged in fall
+		winter = "seasons:dirt_with_grass_winter",
+	},
+	colors = {
+		-- Used by grass-specific node registration (top + side overlay tint).
+		spring = "^[colorizehsl:119:40:-30",
+		-- Winter grass: direct hue/saturation/lightness adjustment.
+		winter = "^[colorizehsl:37:30:-10",
+	},
+	params = {
+		-- Simpler seasonal behavior than leaves.
+		winter_thermal_start = 0.05,
+		winter_thermal_full = -0.10,
+		summer_thermal_start = 0.30,
+		summer_thermal_full = 0.50,
+		spring_band_min = -0.02,
+		spring_band_max = 0.34,
+		fall_band_min = -0.02,
+		fall_band_max = 0.34,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.0,
+		transition_rate = 0.20,
+	},
 }
 
 seasons.texture_plan.node_to_leaf_block = {}
@@ -122,6 +152,11 @@ function seasons.texture_plan.pick_target_node_for_pos(node_name, state, pos)
 	local picked = seasons.texture_plan.pick_target_node(node_name, state)
 	if not picked then return nil end
 	if picked.best ~= "fall" then
+		return picked
+	end
+
+	-- Only oak leaves split into red/yellow branches.
+	if not picked.cfg.variants.fall_red or not picked.cfg.variants.fall_yellow then
 		return picked
 	end
 

@@ -4,7 +4,7 @@ Smooth biome-driven seasons for VoxeLibre/Luanti.
 
 ## Status
 
-Prototype: oak leaf seasonal tint cycling is active.
+Prototype: seasonal foliage variants are active for oak leaves and grass blocks.
 
 ## Current Features
 
@@ -19,6 +19,10 @@ Prototype: oak leaf seasonal tint cycling is active.
   - `seasons:oak_leaves_fall_red`
   - `seasons:oak_leaves_fall_yellow`
   - `seasons:oak_leaves_winter`
+- Grass block (`mcl_core:dirt_with_grass`) with variant nodes:
+  - `seasons:dirt_with_grass_spring`
+  - `mcl_core:dirt_with_grass` (summer/fall)
+  - `seasons:dirt_with_grass_winter`
 - Epoch-based updates for slow seasonal progression (configurable days per epoch).
 - LBM on block load updates leaves only when their stored epoch is stale.
 - Periodic player-proximate batch updates run only when epoch changes.
@@ -32,7 +36,7 @@ Prototype: oak leaf seasonal tint cycling is active.
 - `/seasons_set_season <spring|summer|fall|winter>`
   - Jump to a season midpoint in the current year cycle.
 - `/seasons_force_update [budget]`
-  - Immediately apply seasonal oak-leaf updates around your player.
+  - Immediately apply seasonal foliage updates around your player.
 
 ## Main Files
 
