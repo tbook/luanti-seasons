@@ -13,6 +13,10 @@ seasons.config.flower_update_interval = tonumber(minetest.settings:get("seasons_
 seasons.config.flower_update_budget = tonumber(minetest.settings:get("seasons_flower_update_budget")) or 120
 seasons.config.flower_scan_radius = tonumber(minetest.settings:get("seasons_flower_scan_radius")) or 24
 
+seasons.config.weather_bias_enable = minetest.settings:get_bool("seasons_weather_bias_enable", true)
+seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or 0.5
+seasons.config.weather_snow_bias_strength = tonumber(minetest.settings:get("seasons_weather_snow_bias_strength")) or 0.85
+
 -- Virtual day offset for testing and command-driven season forcing.
 seasons.config.day_offset = 0.0
 

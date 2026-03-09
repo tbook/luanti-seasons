@@ -158,3 +158,31 @@ minetest.register_chatcommand("seasons_force_flowers", {
 		return true, string.format("Forced seasonal flower update processed %d nodes.", processed)
 	end,
 })
+
+minetest.register_chatcommand("seasons_weather_state", {
+	params = "",
+	description = "Show seasonal weather bias values at your position.",
+	func = function(name)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local pos = vector.round(player:get_pos())
+		local ok, info = seasons.weather_plan.should_bias_to_snow(pos)
+		if not info or not info.state or not info.ctx then
+			return false, "No weather/state data at your position."
+		end
+		return true, string.format(
+			"biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f winterness=%.3f snow_possible=%.3f snow_bias_chance=%.3f roll=%.3f biased_snow=%s",
+			info.ctx.name or "?",
+			info.state.thermal,
+			info.state.moisture,
+			info.state.dthermal_dt,
+			info.winterness or 0,
+			info.snow_possible or 0,
+			info.chance or 0,
+			info.roll or 0,
+			ok and "yes" or "no"
+		)
+	end,
+})

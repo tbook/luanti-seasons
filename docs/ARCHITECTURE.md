@@ -7,7 +7,7 @@
 3. Resolve biome context at a position.
 4. Map biome context -> biome profile.
 5. Compute state (`thermal`, `moisture`, `dthermal_dt`).
-6. Feed state into systems (textures first; weather later).
+6. Feed state into systems (textures, flowers, weather).
 
 ## Planned Subsystems
 
@@ -24,6 +24,7 @@
 - Voxelibre biome bridge: active for biome sampling + profile resolution.
 - Texture adaptation: active prototype for oak leaves (`mcl_core:leaves`) and grass blocks (`mcl_core:dirt_with_grass`) using seasonal variant nodes.
 - Flower adaptation: active prototype for spring-biased temperate flowers with summer/fall decay.
+- Weather adaptation: active prototype for seasonal snow bias via weather compatibility hook.
 - Updater: periodic player-area scan with budget controls.
 - Commands: active (`/seasons_state`, `/seasons_set_day`, `/seasons_set_season`, `/seasons_force_update`).
 - Weather integration: placeholder only.

@@ -4,7 +4,7 @@ Smooth biome-driven seasons for VoxeLibre/Luanti.
 
 ## Status
 
-Prototype: seasonal foliage variants are active for oak leaves and grass blocks.
+Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are active.
 
 ## Current Features
 
@@ -30,6 +30,10 @@ Prototype: seasonal foliage variants are active for oak leaves and grass blocks.
   - spawns in spring, thins in summer, drops near zero in fall
   - excludes Nether/End and beach/ocean biome variants
   - only manages flowers placed by this mod
+- Seasonal weather framework (lightweight):
+  - wraps VoxeLibre `mcl_weather.has_snow(pos)` with seasonal bias
+  - winter-biased snow probability from biome data + season state
+  - preserves original snow rules and only adds extra snow-possible cases
 
 ## Commands
 
@@ -45,6 +49,8 @@ Prototype: seasonal foliage variants are active for oak leaves and grass blocks.
   - Show biome eligibility and current flower target density at your position.
 - `/seasons_force_flowers [budget]`
   - Immediately run spring-flower spawn/decay around your player.
+- `/seasons_weather_state`
+  - Show `winterness`, `snow_possible`, and final snow-bias chance at your position.
 
 ## Main Files
 
@@ -58,6 +64,8 @@ Prototype: seasonal foliage variants are active for oak leaves and grass blocks.
 - `leaf_update.lua`
 - `flowers_plan.lua`
 - `flowers_update.lua`
+- `weather_plan.lua`
+- `weather_voxelibre.lua`
 - `commands.lua`
 - `settingtypes.txt`
 - `mod.conf`
