@@ -109,3 +109,52 @@ minetest.register_chatcommand("seasons_force_update", {
 		return true, string.format("Forced seasonal leaf update processed %d nodes.", processed)
 	end,
 })
+
+minetest.register_chatcommand("seasons_flowers_state", {
+	params = "",
+	description = "Show spring-flower controller state at your position.",
+	func = function(name)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local pos = vector.round(player:get_pos())
+		local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(pos)
+		if not state or not ctx then
+			return false, "No biome/state data at your position."
+		end
+		local eligible = seasons.compat_voxelibre.is_temperate_flower_biome(ctx)
+		local year_pos = seasons.model.current_year_pos()
+		local curve = seasons.flowers_plan.year_curve(year_pos)
+		local target = seasons.flowers_plan.target_density(state, year_pos)
+		return true, string.format(
+			"biome=%s eligible=%s year_pos=%.3f bloom_curve=%.3f thermal=%.3f moisture=%.3f dthermal_dt=%.3f flower_target=%.3f",
+			ctx.name or "?",
+			eligible and "yes" or "no",
+			year_pos,
+			curve,
+			state.thermal,
+			state.moisture,
+			state.dthermal_dt,
+			target
+		)
+	end,
+})
+
+minetest.register_chatcommand("seasons_force_flowers", {
+	params = "[budget]",
+	description = "Immediately run spring-flower spawn/decay around your player.",
+	privs = {server = true},
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local budget = tonumber(param) or (seasons.config.flower_update_budget * 20)
+		if budget < 1 then
+			return false, "Budget must be >= 1."
+		end
+		local processed = seasons.flowers_update.process_player_area(player, budget, true)
+		return true, string.format("Forced seasonal flower update processed %d nodes.", processed)
+	end,
+})

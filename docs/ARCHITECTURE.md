@@ -23,6 +23,7 @@
 
 - Voxelibre biome bridge: active for biome sampling + profile resolution.
 - Texture adaptation: active prototype for oak leaves (`mcl_core:leaves`) and grass blocks (`mcl_core:dirt_with_grass`) using seasonal variant nodes.
+- Flower adaptation: active prototype for spring-biased temperate flowers with summer/fall decay.
 - Updater: periodic player-area scan with budget controls.
 - Commands: active (`/seasons_state`, `/seasons_set_day`, `/seasons_set_season`, `/seasons_force_update`).
 - Weather integration: placeholder only.
