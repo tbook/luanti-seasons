@@ -25,6 +25,7 @@
 - Texture adaptation: active prototype for oak leaves (`mcl_core:leaves`) and grass blocks (`mcl_core:dirt_with_grass`) using seasonal variant nodes.
 - Flower adaptation: active prototype for spring-biased temperate flowers with summer/fall decay.
 - Weather adaptation: active prototype for seasonal snow bias via weather compatibility hook.
+- Melt adaptation: active prototype for seasonal spring melt + summer clear with load-time correction.
 - Updater: periodic player-area scan with budget controls.
 - Commands: active (`/seasons_state`, `/seasons_set_day`, `/seasons_set_season`, `/seasons_force_update`).
 - Weather integration: placeholder only.

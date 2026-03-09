@@ -34,6 +34,11 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - wraps VoxeLibre `mcl_weather.has_snow(pos)` with seasonal bias
   - winter-biased snow probability from biome data + season state
   - preserves original snow rules and only adds extra snow-possible cases
+- Seasonal melt controller:
+  - gradually melts snow + ice in spring
+  - deterministic summer clear in non-permanent snow biomes
+  - LBM-on-load correction for stale unloaded chunks
+  - background sweeper for loaded far-away areas
 
 ## Commands
 
@@ -51,6 +56,10 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - Immediately run spring-flower spawn/decay around your player.
 - `/seasons_weather_state`
   - Show `winterness`, `snow_possible`, and final snow-bias chance at your position.
+- `/seasons_force_melt [budget]`
+  - Immediately run seasonal snow/ice melt updates around your player.
+- `/seasons_melt_state`
+  - Show melt runtime config values (debug/tuning).
 
 ## Main Files
 
@@ -66,6 +75,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - `flowers_update.lua`
 - `weather_plan.lua`
 - `weather_voxelibre.lua`
+- `snow_melt.lua`
 - `commands.lua`
 - `settingtypes.txt`
 - `mod.conf`

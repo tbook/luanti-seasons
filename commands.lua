@@ -186,3 +186,42 @@ minetest.register_chatcommand("seasons_weather_state", {
 		)
 	end,
 })
+
+minetest.register_chatcommand("seasons_force_melt", {
+	params = "[budget]",
+	description = "Immediately run seasonal snow/ice melt updates around your player.",
+	privs = {server = true},
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local budget = tonumber(param) or (seasons.config.melt_update_budget * 20)
+		if budget < 1 then
+			return false, "Budget must be >= 1."
+		end
+		local processed = seasons.snow_melt.process_player_area(player, budget, true)
+		return true, string.format("Forced seasonal melt processed %d nodes.", processed)
+	end,
+})
+
+minetest.register_chatcommand("seasons_melt_state", {
+	params = "",
+	description = "Show seasonal melt config/runtime values.",
+	func = function()
+		return true, string.format(
+			"melt_enable=%s melt_debug_log=%s year_days=%.3f melt_epoch_days=%.3f interval=%.2f budget=%d radius=%d bg_enable=%s bg_interval=%.2f bg_budget=%d bg_radius=%d",
+			tostring(seasons.config.melt_enable),
+			tostring(seasons.config.melt_debug_log),
+			seasons.config.year_days or 0,
+			seasons.config.melt_epoch_days or 0,
+			seasons.config.melt_update_interval or 0,
+			seasons.config.melt_update_budget or 0,
+			seasons.config.melt_scan_radius or 0,
+			tostring(seasons.config.melt_bg_enable),
+			seasons.config.melt_bg_interval or 0,
+			seasons.config.melt_bg_budget or 0,
+			seasons.config.melt_bg_radius or 0
+		)
+	end,
+})

@@ -11,7 +11,7 @@ local NETHER_EXACT = {
 	BasaltDelta = true,
 }
 
-local function is_overworld_biome(ctx)
+function seasons.weather_plan.is_overworld_biome(ctx)
 	if not ctx then return false end
 	local name = ctx.name or ""
 	if name:sub(1, 3) == "End" then
@@ -21,6 +21,13 @@ local function is_overworld_biome(ctx)
 		return false
 	end
 	return true
+end
+
+function seasons.weather_plan.is_permanent_snow_biome(ctx)
+	if not ctx or not ctx.reg then
+		return false
+	end
+	return ctx.reg._mcl_biome_type == "snowy"
 end
 
 function seasons.weather_plan.winterness(state)
@@ -35,7 +42,7 @@ function seasons.weather_plan.winterness(state)
 end
 
 function seasons.weather_plan.snow_possible(ctx)
-	if not is_overworld_biome(ctx) then
+	if not seasons.weather_plan.is_overworld_biome(ctx) then
 		return 0
 	end
 	if not ctx or not ctx.reg then
