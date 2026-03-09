@@ -16,10 +16,12 @@ Prototype: oak leaf seasonal tint cycling is active.
 - Oak leaves only (`mcl_core:leaves`) with variant nodes:
   - `seasons:oak_leaves_spring`
   - `mcl_core:leaves` (summer)
-  - `seasons:oak_leaves_fall`
+  - `seasons:oak_leaves_fall_red`
+  - `seasons:oak_leaves_fall_yellow`
   - `seasons:oak_leaves_winter`
-- Periodic batch updater with configurable budget/radius.
-- Updates are player-proximate (scan around connected players).
+- Epoch-based updates for slow seasonal progression (configurable days per epoch).
+- LBM on block load updates leaves only when their stored epoch is stale.
+- Periodic player-proximate batch updates run only when epoch changes.
 
 ## Commands
 

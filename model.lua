@@ -37,6 +37,12 @@ function seasons.model.current_year_pos()
 	return seasons.model.year_pos(seasons.model.current_day_float())
 end
 
+function seasons.model.current_leaf_epoch()
+	local span = seasons.config.leaf_epoch_days
+	if span <= 0 then span = 1 end
+	return math.floor(seasons.model.current_day_float() / span)
+end
+
 -- Compute the 3 core state variables for a biome profile.
 function seasons.model.compute_state(year_pos, biome_profile)
 	local a_t = biome_profile.amp_temp or 0

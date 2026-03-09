@@ -8,13 +8,22 @@ seasons.texture_plan.leaf_blocks = {
 		variants = {
 			spring = "seasons:oak_leaves_spring",
 			summer = "mcl_core:leaves",
-			fall = "seasons:oak_leaves_fall",
+			fall = "seasons:oak_leaves_fall_red",
+			fall_red = "seasons:oak_leaves_fall_red",
+			fall_yellow = "seasons:oak_leaves_fall_yellow",
 			winter = "seasons:oak_leaves_winter",
 		},
 		colors = {
-			spring = "#74C85B",
-			fall = "#B98334",
-			winter = "#93A29A",
+			-- If value starts with "^[", it is treated as a full texture modifier chain.
+			-- Otherwise it is used as ^[colorize:<value>.
+			spring = "#98FF7A:90",
+			-- Autumn tuning:
+			-- - Lower saturation than prior pass
+			-- - Reapply base alpha mask to preserve leaf transparency
+			-- hsl hue is a relative shift, so use negative values to move green foliage toward orange/red.
+			fall_red = "^[hsl:-96:46:-16^[colorizehsl:22:38:-6^[mask:default_leaves.png",
+			fall_yellow = "^[hsl:-72:56:-14^[colorizehsl:38:48:-6^[mask:default_leaves.png",
+			winter = "^[multiply:#6F5A42^[colorize:#AFA9A2:95",
 		},
 		params = {
 			-- Roughly quarter-like behavior in medium/temperate biomes.
@@ -107,4 +116,33 @@ function seasons.texture_plan.pick_target_node(node_name, state)
 		best = best,
 		target = target,
 	}
+end
+
+function seasons.texture_plan.pick_target_node_for_pos(node_name, state, pos)
+	local picked = seasons.texture_plan.pick_target_node(node_name, state)
+	if not picked then return nil end
+	if picked.best ~= "fall" then
+		return picked
+	end
+
+	-- Deterministic red/yellow mix for autumn canopy variation.
+	-- Use mixed dual hashes with coordinate permutation to avoid axis banding.
+	local x = math.floor(pos.x)
+	local y = math.floor(pos.y)
+	local z = math.floor(pos.z)
+	local h1 = minetest.hash_node_position({x = x, y = y, z = z})
+	local h2 = minetest.hash_node_position({
+		x = z * 17 + y * 3,
+		y = x * 31 - z * 7,
+		z = y * 13 + x * 5,
+	})
+	-- LCG-style mixing in pure arithmetic for Lua portability.
+	local mixed = (h1 * 1103515245 + h2 * 12345 + 2147483647) % 2147483647
+	local pct = mixed % 100
+	if pct < 45 then
+		picked.target = picked.cfg.variants.fall_red
+	else
+		picked.target = picked.cfg.variants.fall_yellow
+	end
+	return picked
 end

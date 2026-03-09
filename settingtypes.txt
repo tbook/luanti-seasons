@@ -1,5 +1,6 @@
 seasons_year_days (Season Year Length In In-Game Days) int 100 4 10000
 seasons_debug_log (Enable Seasons Debug Logging) bool false
+seasons_leaf_epoch_days (Leaf Recolor Epoch Length In In-Game Days) float 2.0 0.1 100
 seasons_leaf_update_interval (Leaf Update Interval Seconds) float 2.0 0.1 60
 seasons_leaf_update_budget (Leaf Node Swaps Per Tick Budget) int 160 1 5000
 seasons_leaf_scan_radius (Leaf Scan Radius Around Player) int 24 4 96

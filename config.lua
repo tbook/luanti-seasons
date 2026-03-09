@@ -2,6 +2,7 @@ seasons.config = {}
 
 seasons.config.year_days = tonumber(minetest.settings:get("seasons_year_days")) or 100
 seasons.config.debug_log = minetest.settings:get_bool("seasons_debug_log", false)
+seasons.config.leaf_epoch_days = tonumber(minetest.settings:get("seasons_leaf_epoch_days")) or 2.0
 
 seasons.config.leaf_update_interval = tonumber(minetest.settings:get("seasons_leaf_update_interval")) or 2.0
 seasons.config.leaf_update_budget = tonumber(minetest.settings:get("seasons_leaf_update_budget")) or 160
