@@ -12,7 +12,7 @@ seasons_weather_bias_enable (Enable Seasonal Weather Snow Bias) bool true
 seasons_weather_epoch_days (Weather Bias Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_weather_snow_bias_strength (Seasonal Snow Bias Strength) float 0.85 0 1
 seasons_melt_enable (Enable Seasonal Snow/Ice Melt) bool true
-seasons_melt_epoch_days (Seasonal Melt Epoch Length In In-Game Days) float 0.2 0.1 20
+seasons_melt_epoch_days (Seasonal Melt Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_melt_update_interval (Seasonal Melt Update Interval Seconds) float 2.0 0.1 60
 seasons_melt_update_budget (Seasonal Melt Node Change Budget Per Tick) int 120 1 5000
 seasons_melt_scan_radius (Seasonal Melt Scan Radius Around Player) int 24 4 96
