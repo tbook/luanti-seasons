@@ -261,10 +261,12 @@ minetest.register_chatcommand("seasons_flower_dormancy_state", {
 		end
 		local parts = {
 			string.format(
-				"radius=%d year_pos=%.3f target=%.3f thermal_target=%.3f tracked=%d active=%d dormant=%d",
+				"radius=%d year_pos=%.3f target=%.3f phase_target=%.3f cold_target=%.3f thermal_target=%.3f tracked=%d active=%d dormant=%d",
 				st.radius or 0,
 				st.year_pos or 0,
 				st.target or 0,
+				st.phase_target or 0,
+				st.cold_target or 0,
 				st.thermal_target or 0,
 				st.tracked or 0,
 				st.total_active or 0,

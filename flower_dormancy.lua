@@ -78,6 +78,14 @@ local function dormant_target(year_pos)
 	return 0
 end
 
+local function dormancy_target_for_state(state, year_pos)
+	local phase_target = dormant_target(year_pos)
+	-- Cold snap override: once thermal is winter-cold, move rapidly toward full dormancy.
+	-- thermal ~= -0.04 reaches ~100%; thermal ~= +0.02 still allows partial transition.
+	local cold_target = clamp01((0.02 - (state.thermal or 0)) / 0.06)
+	return math.max(phase_target, cold_target), phase_target, cold_target
+end
+
 local function register_dormant_variant(base_name)
 	local base = minetest.registered_nodes[base_name]
 	if not base then
@@ -156,14 +164,32 @@ function seasons.flower_dormancy.debug_state(pos, radius)
 
 	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(pos)
 	local thermal_target = 0
+	local phase_target = dormant_target(seasons.model.current_year_pos())
+	local cold_target = 0
 	if state and ctx and seasons.weather_plan.is_overworld_biome(ctx) then
 		thermal_target = seasons.weather_plan.winterness(state)
+		local combined
+		combined, phase_target, cold_target = dormancy_target_for_state(state, seasons.model.current_year_pos())
+		return {
+			radius = r,
+			year_pos = seasons.model.current_year_pos(),
+			target = combined,
+			phase_target = phase_target,
+			cold_target = cold_target,
+			thermal_target = thermal_target,
+			tracked = #TRACKED,
+			total_active = total_active,
+			total_dormant = total_dormant,
+			counts = counts,
+		}
 	end
 
 	return {
 		radius = r,
 		year_pos = seasons.model.current_year_pos(),
-		target = dormant_target(seasons.model.current_year_pos()),
+		target = phase_target,
+		phase_target = phase_target,
+		cold_target = cold_target,
 		thermal_target = thermal_target,
 		tracked = #TRACKED,
 		total_active = total_active,
@@ -176,9 +202,7 @@ local function should_be_dormant(state, ctx, pos)
 	if not seasons.weather_plan.is_overworld_biome(ctx) then
 		return false
 	end
-	local phase_target = dormant_target(seasons.model.current_year_pos())
-	local thermal_target = seasons.weather_plan.winterness(state)
-	local target = math.max(phase_target, thermal_target)
+	local target = dormancy_target_for_state(state, seasons.model.current_year_pos())
 	if target <= 0 then
 		return false
 	end

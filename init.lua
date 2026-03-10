@@ -10,6 +10,7 @@ dofile(modpath .. "/compat_voxelibre.lua")
 dofile(modpath .. "/texture_plan.lua")
 dofile(modpath .. "/weather_plan.lua")
 dofile(modpath .. "/weather_voxelibre.lua")
+dofile(modpath .. "/weather_weights.lua")
 dofile(modpath .. "/flowers_plan.lua")
 dofile(modpath .. "/leaf_nodes.lua")
 dofile(modpath .. "/leaf_update.lua")
@@ -20,6 +21,7 @@ dofile(modpath .. "/commands.lua")
 
 minetest.register_on_mods_loaded(function()
 	seasons.weather_voxelibre.install()
+	seasons.weather_weights.install()
 	if seasons.config.melt_debug_log then
 		minetest.log("action", string.format(
 			"[seasons] melt cfg enable=%s debug=%s epoch_days=%.3f interval=%.2f budget=%d radius=%d bg_enable=%s bg_interval=%.2f bg_budget=%d bg_radius=%d",

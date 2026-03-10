@@ -35,11 +35,15 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - swaps flowers to dormant winter stumps in winter
   - restores original flowers in spring
   - uses gradual budgeted updates and LBM-on-load correction
-  - uses `max(calendar_winter_window, thermal_winterness)` for onset
+  - uses a cold-sensitive target so true winter temperatures drive near-full dormancy
 - Seasonal weather framework (lightweight):
   - wraps VoxeLibre `mcl_weather.has_snow(pos)` with seasonal bias
   - winter-biased snow probability from biome data + season state
   - preserves original snow rules and only adds extra snow-possible cases
+  - seasonally tunes weather transition weights:
+    - shorter clear-weather durations in winter
+    - stronger `none->snow` and `rain->snow` routing in winter
+    - weather events still end via normal VoxeLibre durations/transitions
 - Seasonal melt controller:
   - gradually melts snow + ice in spring
   - deterministic summer clear in non-permanent snow biomes
@@ -86,6 +90,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - `flower_dormancy.lua`
 - `weather_plan.lua`
 - `weather_voxelibre.lua`
+- `weather_weights.lua`
 - `snow_melt.lua`
 - `commands.lua`
 - `settingtypes.txt`

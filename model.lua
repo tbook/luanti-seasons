@@ -15,11 +15,26 @@ local function smoothstep(edge0, edge1, x)
 end
 
 function seasons.model.current_day_float()
-	return minetest.get_day_count() + minetest.get_timeofday() + seasons.config.day_offset
+	local raw_day_count = 0
+	if type(minetest.get_day_count) == "function" then
+		raw_day_count = minetest.get_day_count()
+	end
+	local raw_time_of_day = 0
+	if type(minetest.get_timeofday) == "function" then
+		raw_time_of_day = minetest.get_timeofday()
+	end
+
+	local day_count = tonumber(raw_day_count) or 0
+	local time_of_day = tonumber(raw_time_of_day) or 0
+	local day_offset = 0
+	if seasons.config then
+		day_offset = tonumber(seasons.config.day_offset) or 0
+	end
+	return day_count + time_of_day + day_offset
 end
 
 function seasons.model.set_current_day_float(day_float)
-	local current = minetest.get_day_count() + minetest.get_timeofday()
+	local current = seasons.model.current_day_float() - (tonumber(seasons.config.day_offset) or 0)
 	seasons.config.day_offset = day_float - current
 end
 

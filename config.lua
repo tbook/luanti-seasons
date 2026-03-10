@@ -18,8 +18,8 @@ seasons.config.flower_update_budget = tonumber(minetest.settings:get("seasons_fl
 seasons.config.flower_scan_radius = tonumber(minetest.settings:get("seasons_flower_scan_radius")) or 24
 seasons.config.flower_dormancy_enable = minetest.settings:get_bool("seasons_flower_dormancy_enable", true)
 seasons.config.flower_dormancy_epoch_days = tonumber(minetest.settings:get("seasons_flower_dormancy_epoch_days")) or seasons.config.flower_epoch_days
-seasons.config.flower_dormancy_update_interval = tonumber(minetest.settings:get("seasons_flower_dormancy_update_interval")) or 2.0
-seasons.config.flower_dormancy_update_budget = tonumber(minetest.settings:get("seasons_flower_dormancy_update_budget")) or 140
+seasons.config.flower_dormancy_update_interval = tonumber(minetest.settings:get("seasons_flower_dormancy_update_interval")) or 1.0
+seasons.config.flower_dormancy_update_budget = tonumber(minetest.settings:get("seasons_flower_dormancy_update_budget")) or 260
 seasons.config.flower_dormancy_scan_radius = tonumber(minetest.settings:get("seasons_flower_dormancy_scan_radius")) or 24
 seasons.config.flower_dormancy_transition_days = tonumber(minetest.settings:get("seasons_flower_dormancy_transition_days")) or 3.0
 
