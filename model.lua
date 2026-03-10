@@ -49,6 +49,12 @@ function seasons.model.current_flower_epoch()
 	return math.floor(seasons.model.current_day_float() / span)
 end
 
+function seasons.model.current_flower_dormancy_epoch()
+	local span = seasons.config.flower_dormancy_epoch_days
+	if span <= 0 then span = 1 end
+	return math.floor(seasons.model.current_day_float() / span)
+end
+
 function seasons.model.current_weather_epoch()
 	local span = seasons.config.weather_epoch_days
 	if span <= 0 then span = 1 end

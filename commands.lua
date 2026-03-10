@@ -173,12 +173,13 @@ minetest.register_chatcommand("seasons_weather_state", {
 			return false, "No weather/state data at your position."
 		end
 		return true, string.format(
-			"biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f winterness=%.3f snow_possible=%.3f snow_bias_chance=%.3f roll=%.3f biased_snow=%s",
+			"biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f winterness=%.3f onset=%.3f snow_possible=%.3f snow_bias_chance=%.3f roll=%.3f biased_snow=%s",
 			info.ctx.name or "?",
 			info.state.thermal,
 			info.state.moisture,
 			info.state.dthermal_dt,
 			info.winterness or 0,
+			info.onset or 0,
 			info.snow_possible or 0,
 			info.chance or 0,
 			info.roll or 0,
@@ -223,5 +224,58 @@ minetest.register_chatcommand("seasons_melt_state", {
 			seasons.config.melt_bg_budget or 0,
 			seasons.config.melt_bg_radius or 0
 		)
+	end,
+})
+
+minetest.register_chatcommand("seasons_force_flower_dormancy", {
+	params = "[budget]",
+	description = "Immediately run seasonal flower dormancy swaps around your player.",
+	privs = {server = true},
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local budget = tonumber(param) or (seasons.config.flower_dormancy_update_budget * 20)
+		if budget < 1 then
+			return false, "Budget must be >= 1."
+		end
+		local processed = seasons.flower_dormancy.process_player_area(player, budget, true)
+		return true, string.format("Forced flower dormancy processed %d nodes.", processed)
+	end,
+})
+
+minetest.register_chatcommand("seasons_flower_dormancy_state", {
+	params = "[radius]",
+	description = "Show local flower dormancy debug counts around your player.",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local radius = tonumber(param) or seasons.config.flower_dormancy_scan_radius
+		local pos = vector.round(player:get_pos())
+		local st = seasons.flower_dormancy.debug_state(pos, radius)
+		if not st then
+			return false, "Dormancy state unavailable."
+		end
+		local parts = {
+			string.format(
+				"radius=%d year_pos=%.3f target=%.3f thermal_target=%.3f tracked=%d active=%d dormant=%d",
+				st.radius or 0,
+				st.year_pos or 0,
+				st.target or 0,
+				st.thermal_target or 0,
+				st.tracked or 0,
+				st.total_active or 0,
+				st.total_dormant or 0
+			)
+		}
+		local limit = math.min(4, #(st.counts or {}))
+		for i = 1, limit do
+			local c = st.counts[i]
+			parts[#parts + 1] = string.format("%s:%d/%d", c.active:gsub("^mcl_flowers:", ""), c.active_count, c.dormant_count)
+		end
+		return true, table.concat(parts, " | ")
 	end,
 })

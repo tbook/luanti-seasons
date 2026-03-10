@@ -14,6 +14,7 @@ dofile(modpath .. "/flowers_plan.lua")
 dofile(modpath .. "/leaf_nodes.lua")
 dofile(modpath .. "/leaf_update.lua")
 dofile(modpath .. "/flowers_update.lua")
+dofile(modpath .. "/flower_dormancy.lua")
 dofile(modpath .. "/snow_melt.lua")
 dofile(modpath .. "/commands.lua")
 

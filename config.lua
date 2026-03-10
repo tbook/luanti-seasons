@@ -7,11 +7,21 @@ seasons.config.leaf_epoch_days = tonumber(minetest.settings:get("seasons_leaf_ep
 seasons.config.leaf_update_interval = tonumber(minetest.settings:get("seasons_leaf_update_interval")) or 2.0
 seasons.config.leaf_update_budget = tonumber(minetest.settings:get("seasons_leaf_update_budget")) or 160
 seasons.config.leaf_scan_radius = tonumber(minetest.settings:get("seasons_leaf_scan_radius")) or 24
+seasons.config.leaf_bg_enable = minetest.settings:get_bool("seasons_leaf_bg_enable", true)
+seasons.config.leaf_bg_interval = tonumber(minetest.settings:get("seasons_leaf_bg_interval")) or 12.0
+seasons.config.leaf_bg_budget = tonumber(minetest.settings:get("seasons_leaf_bg_budget")) or 100
+seasons.config.leaf_bg_radius = tonumber(minetest.settings:get("seasons_leaf_bg_radius")) or 96
 
 seasons.config.flower_epoch_days = tonumber(minetest.settings:get("seasons_flower_epoch_days")) or seasons.config.leaf_epoch_days
 seasons.config.flower_update_interval = tonumber(minetest.settings:get("seasons_flower_update_interval")) or 2.0
 seasons.config.flower_update_budget = tonumber(minetest.settings:get("seasons_flower_update_budget")) or 120
 seasons.config.flower_scan_radius = tonumber(minetest.settings:get("seasons_flower_scan_radius")) or 24
+seasons.config.flower_dormancy_enable = minetest.settings:get_bool("seasons_flower_dormancy_enable", true)
+seasons.config.flower_dormancy_epoch_days = tonumber(minetest.settings:get("seasons_flower_dormancy_epoch_days")) or seasons.config.flower_epoch_days
+seasons.config.flower_dormancy_update_interval = tonumber(minetest.settings:get("seasons_flower_dormancy_update_interval")) or 2.0
+seasons.config.flower_dormancy_update_budget = tonumber(minetest.settings:get("seasons_flower_dormancy_update_budget")) or 140
+seasons.config.flower_dormancy_scan_radius = tonumber(minetest.settings:get("seasons_flower_dormancy_scan_radius")) or 24
+seasons.config.flower_dormancy_transition_days = tonumber(minetest.settings:get("seasons_flower_dormancy_transition_days")) or 3.0
 
 seasons.config.weather_bias_enable = minetest.settings:get_bool("seasons_weather_bias_enable", true)
 seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)

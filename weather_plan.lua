@@ -41,6 +41,17 @@ function seasons.weather_plan.winterness(state)
 	return clamp01(math.max(thermal_winter, year_winter * 0.60))
 end
 
+function seasons.weather_plan.winter_onset_factor(year_pos)
+	-- Delay snow-bias onset until late fall, peak in winter, then taper in spring.
+	-- 0 outside roughly [0.32, 0.68], full near winter center [0.42, 0.58].
+	local y = year_pos
+	if y == nil then
+		y = seasons.model.current_year_pos()
+	end
+	local dist = math.abs(y - 0.5)
+	return clamp01((0.18 - dist) / 0.10)
+end
+
 function seasons.weather_plan.snow_possible(ctx)
 	if not seasons.weather_plan.is_overworld_biome(ctx) then
 		return 0
@@ -85,7 +96,8 @@ function seasons.weather_plan.snow_bias_chance(state, ctx)
 	local winterness = seasons.weather_plan.winterness(state)
 	local possible = seasons.weather_plan.snow_possible(ctx)
 	local strength = clamp01(seasons.config.weather_snow_bias_strength or 0.85)
-	return clamp01(winterness * possible * strength)
+	local onset = seasons.weather_plan.winter_onset_factor(seasons.model.current_year_pos())
+	return clamp01(winterness * possible * strength * onset)
 end
 
 function seasons.weather_plan.sample_epoch_roll(pos, salt)
@@ -121,8 +133,9 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 			state = state,
 			winterness = seasons.weather_plan.winterness(state),
 			snow_possible = seasons.weather_plan.snow_possible(ctx),
+			onset = seasons.weather_plan.winter_onset_factor(seasons.model.current_year_pos()),
 		}
-		c.chance = clamp01(c.winterness * c.snow_possible * clamp01(seasons.config.weather_snow_bias_strength or 0.85))
+		c.chance = clamp01(c.winterness * c.snow_possible * clamp01(seasons.config.weather_snow_bias_strength or 0.85) * c.onset)
 		bias_cache[biome_key] = c
 	end
 
@@ -132,6 +145,7 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 			chance = chance,
 			winterness = c.winterness,
 			snow_possible = c.snow_possible,
+			onset = c.onset,
 			state = c.state,
 			ctx = ctx,
 		}
@@ -146,6 +160,7 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 			roll = 0,
 			winterness = c.winterness,
 			snow_possible = c.snow_possible,
+			onset = c.onset,
 			state = c.state,
 			ctx = ctx,
 		}
@@ -158,6 +173,7 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 		roll = roll,
 		winterness = c.winterness,
 		snow_possible = c.snow_possible,
+		onset = c.onset,
 		state = c.state,
 		ctx = ctx,
 	}

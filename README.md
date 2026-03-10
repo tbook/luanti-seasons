@@ -25,11 +25,17 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - `seasons:dirt_with_grass_winter`
 - Epoch-based updates for slow seasonal progression (configurable days per epoch).
 - LBM on block load updates leaves only when their stored epoch is stale.
-- Periodic player-proximate batch updates run only when epoch changes.
+- Periodic player-proximate leaf/grass updates run continuously with budgeted batches.
+- Leaf background sweeper gradually catches up loaded far-away areas.
 - Spring flower controller (temperate biomes only):
   - spawns in spring, thins in summer, drops near zero in fall
   - excludes Nether/End and beach/ocean biome variants
   - only manages flowers placed by this mod
+- Flower dormancy controller (non-managed small flowers + ferns):
+  - swaps flowers to dormant winter stumps in winter
+  - restores original flowers in spring
+  - uses gradual budgeted updates and LBM-on-load correction
+  - uses `max(calendar_winter_window, thermal_winterness)` for onset
 - Seasonal weather framework (lightweight):
   - wraps VoxeLibre `mcl_weather.has_snow(pos)` with seasonal bias
   - winter-biased snow probability from biome data + season state
@@ -54,8 +60,12 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - Show biome eligibility and current flower target density at your position.
 - `/seasons_force_flowers [budget]`
   - Immediately run spring-flower spawn/decay around your player.
+- `/seasons_force_flower_dormancy [budget]`
+  - Immediately run seasonal dormancy swaps around your player.
+- `/seasons_flower_dormancy_state [radius]`
+  - Show local dormancy debug counts (`target`, `thermal_target`, active/dormant totals).
 - `/seasons_weather_state`
-  - Show `winterness`, `snow_possible`, and final snow-bias chance at your position.
+  - Show `winterness`, `onset`, `snow_possible`, and final snow-bias chance at your position.
 - `/seasons_force_melt [budget]`
   - Immediately run seasonal snow/ice melt updates around your player.
 - `/seasons_melt_state`
@@ -73,6 +83,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - `leaf_update.lua`
 - `flowers_plan.lua`
 - `flowers_update.lua`
+- `flower_dormancy.lua`
 - `weather_plan.lua`
 - `weather_voxelibre.lua`
 - `snow_melt.lua`

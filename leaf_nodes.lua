@@ -161,6 +161,47 @@ local function register_grass_variant_node(base_name, variant_name, description_
 	minetest.register_node(variant_name, def)
 end
 
+local function register_tallgrass_variant_node(base_name, variant_name, description_suffix, modifier)
+	local base_def = minetest.registered_nodes[base_name]
+	if not base_def then
+		minetest.log("warning", "[seasons] base plant node not found: " .. base_name)
+		return
+	end
+
+	local def = table.copy(base_def)
+	def.description = (base_def.description or "Grass") .. " " .. description_suffix
+	def._doc_items_create_entry = false
+	def.groups = copy_groups(base_def.groups)
+	def.groups.not_in_creative_inventory = 1
+	def.groups.grass_palette = nil
+	def.paramtype2 = "none"
+	def.palette = nil
+	def.palette_index = nil
+	def.color = nil
+	def.use_texture_alpha = "clip"
+	def.tiles = {}
+	for i = 1, #(base_def.tiles or {}) do
+		local t = base_def.tiles[i]
+		if type(t) == "string" then
+			def.tiles[i] = t .. modifier .. "^[mask:" .. t
+		elseif type(t) == "table" and type(t.name) == "string" then
+			local nt = table.copy(t)
+			nt.name = nt.name .. modifier .. "^[mask:" .. t.name
+			def.tiles[i] = nt
+		else
+			def.tiles[i] = t
+		end
+	end
+	if type(base_def.inventory_image) == "string" then
+		def.inventory_image = base_def.inventory_image .. modifier .. "^[mask:" .. base_def.inventory_image
+	end
+	if type(base_def.wield_image) == "string" then
+		def.wield_image = base_def.wield_image .. modifier .. "^[mask:" .. base_def.wield_image
+	end
+
+	minetest.register_node(variant_name, def)
+end
+
 local function register_grass_variants()
 	local cfg = seasons.texture_plan.leaf_blocks["mcl_core:dirt_with_grass"]
 	if not cfg then return end
@@ -168,5 +209,26 @@ local function register_grass_variants()
 	register_grass_variant_node("mcl_core:dirt_with_grass", cfg.variants.winter, "(Winter)", cfg.colors.winter)
 end
 
+local function register_tallgrass_variants()
+	local cfg = seasons.texture_plan.leaf_blocks["mcl_flowers:tallgrass"]
+	if cfg then
+		register_tallgrass_variant_node("mcl_flowers:tallgrass", cfg.variants.spring, "(Spring)", cfg.colors.spring)
+		register_tallgrass_variant_node("mcl_flowers:tallgrass", cfg.variants.winter, "(Winter)", cfg.colors.winter)
+	end
+
+	cfg = seasons.texture_plan.leaf_blocks["mcl_flowers:double_grass"]
+	if cfg then
+		register_tallgrass_variant_node("mcl_flowers:double_grass", cfg.variants.spring, "(Spring)", cfg.colors.spring)
+		register_tallgrass_variant_node("mcl_flowers:double_grass", cfg.variants.winter, "(Winter)", cfg.colors.winter)
+	end
+
+	cfg = seasons.texture_plan.leaf_blocks["mcl_flowers:double_grass_top"]
+	if cfg then
+		register_tallgrass_variant_node("mcl_flowers:double_grass_top", cfg.variants.spring, "(Spring)", cfg.colors.spring)
+		register_tallgrass_variant_node("mcl_flowers:double_grass_top", cfg.variants.winter, "(Winter)", cfg.colors.winter)
+	end
+end
+
 register_oak_variants()
 register_grass_variants()
+register_tallgrass_variants()

@@ -4,10 +4,20 @@ seasons_leaf_epoch_days (Leaf Recolor Epoch Length In In-Game Days) float 0.4 0.
 seasons_leaf_update_interval (Leaf Update Interval Seconds) float 2.0 0.1 60
 seasons_leaf_update_budget (Leaf Node Swaps Per Tick Budget) int 160 1 5000
 seasons_leaf_scan_radius (Leaf Scan Radius Around Player) int 24 4 96
+seasons_leaf_bg_enable (Enable Leaf Background Sweeper) bool true
+seasons_leaf_bg_interval (Leaf Background Sweep Interval Seconds) float 12.0 1 300
+seasons_leaf_bg_budget (Leaf Background Node Swap Budget Per Sweep) int 100 1 5000
+seasons_leaf_bg_radius (Leaf Background Sweep Radius Around Random Player) int 96 16 512
 seasons_flower_epoch_days (Flower Update Epoch Length In In-Game Days) float 0.4 0.1 100
 seasons_flower_update_interval (Flower Update Interval Seconds) float 2.0 0.1 60
 seasons_flower_update_budget (Flower Node Change Budget Per Tick) int 120 1 5000
 seasons_flower_scan_radius (Flower Scan Radius Around Player) int 24 4 96
+seasons_flower_dormancy_enable (Enable Seasonal Flower Dormancy Swaps) bool true
+seasons_flower_dormancy_epoch_days (Flower Dormancy Epoch Length In In-Game Days) float 0.4 0.1 100
+seasons_flower_dormancy_update_interval (Flower Dormancy Update Interval Seconds) float 2.0 0.1 60
+seasons_flower_dormancy_update_budget (Flower Dormancy Node Swap Budget Per Tick) int 140 1 5000
+seasons_flower_dormancy_scan_radius (Flower Dormancy Scan Radius Around Player) int 24 4 96
+seasons_flower_dormancy_transition_days (Flower Dormancy Transition Window In In-Game Days) float 3.0 1.0 10.0
 seasons_weather_bias_enable (Enable Seasonal Weather Snow Bias) bool true
 seasons_weather_epoch_days (Weather Bias Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_weather_snow_bias_strength (Seasonal Snow Bias Strength) float 0.85 0 1

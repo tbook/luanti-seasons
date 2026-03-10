@@ -72,6 +72,87 @@ seasons.texture_plan.leaf_blocks["mcl_core:dirt_with_grass"] = {
 	},
 }
 
+seasons.texture_plan.leaf_blocks["mcl_flowers:tallgrass"] = {
+	base = "mcl_flowers:tallgrass",
+	variants = {
+		spring = "seasons:tallgrass_spring",
+		summer = "mcl_flowers:tallgrass",
+		fall = "mcl_flowers:tallgrass",
+		winter = "seasons:tallgrass_winter",
+	},
+	colors = {
+		spring = "^[colorizehsl:119:40:-30",
+		winter = "^[colorizehsl:37:30:-10",
+	},
+	params = {
+		winter_thermal_start = 0.05,
+		winter_thermal_full = -0.10,
+		summer_thermal_start = 0.30,
+		summer_thermal_full = 0.50,
+		spring_band_min = -0.02,
+		spring_band_max = 0.34,
+		fall_band_min = -0.02,
+		fall_band_max = 0.34,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.0,
+		transition_rate = 0.20,
+	},
+}
+
+seasons.texture_plan.leaf_blocks["mcl_flowers:double_grass"] = {
+	base = "mcl_flowers:double_grass",
+	variants = {
+		spring = "seasons:double_grass_spring",
+		summer = "mcl_flowers:double_grass",
+		fall = "mcl_flowers:double_grass",
+		winter = "seasons:double_grass_winter",
+	},
+	colors = {
+		spring = "^[colorizehsl:119:40:-30",
+		winter = "^[colorizehsl:37:30:-10",
+	},
+	params = {
+		winter_thermal_start = 0.05,
+		winter_thermal_full = -0.10,
+		summer_thermal_start = 0.30,
+		summer_thermal_full = 0.50,
+		spring_band_min = -0.02,
+		spring_band_max = 0.34,
+		fall_band_min = -0.02,
+		fall_band_max = 0.34,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.0,
+		transition_rate = 0.20,
+	},
+}
+
+seasons.texture_plan.leaf_blocks["mcl_flowers:double_grass_top"] = {
+	base = "mcl_flowers:double_grass_top",
+	variants = {
+		spring = "seasons:double_grass_top_spring",
+		summer = "mcl_flowers:double_grass_top",
+		fall = "mcl_flowers:double_grass_top",
+		winter = "seasons:double_grass_top_winter",
+	},
+	colors = {
+		spring = "^[colorizehsl:119:40:-30",
+		winter = "^[colorizehsl:37:30:-10",
+	},
+	params = {
+		winter_thermal_start = 0.05,
+		winter_thermal_full = -0.10,
+		summer_thermal_start = 0.30,
+		summer_thermal_full = 0.50,
+		spring_band_min = -0.02,
+		spring_band_max = 0.34,
+		fall_band_min = -0.02,
+		fall_band_max = 0.34,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.0,
+		transition_rate = 0.20,
+	},
+}
+
 seasons.texture_plan.node_to_leaf_block = {}
 
 local function register_node_lookup(base_name, cfg)
@@ -148,20 +229,7 @@ function seasons.texture_plan.pick_target_node(node_name, state)
 	}
 end
 
-function seasons.texture_plan.pick_target_node_for_pos(node_name, state, pos)
-	local picked = seasons.texture_plan.pick_target_node(node_name, state)
-	if not picked then return nil end
-	if picked.best ~= "fall" then
-		return picked
-	end
-
-	-- Only oak leaves split into red/yellow branches.
-	if not picked.cfg.variants.fall_red or not picked.cfg.variants.fall_yellow then
-		return picked
-	end
-
-	-- Deterministic red/yellow mix for autumn canopy variation.
-	-- Use mixed dual hashes with coordinate permutation to avoid axis banding.
+local function mixed_hash(pos, salt)
 	local x = math.floor(pos.x)
 	local y = math.floor(pos.y)
 	local z = math.floor(pos.z)
@@ -171,13 +239,59 @@ function seasons.texture_plan.pick_target_node_for_pos(node_name, state, pos)
 		y = x * 31 - z * 7,
 		z = y * 13 + x * 5,
 	})
-	-- LCG-style mixing in pure arithmetic for Lua portability.
-	local mixed = (h1 * 1103515245 + h2 * 12345 + 2147483647) % 2147483647
-	local pct = mixed % 100
-	if pct < 45 then
-		picked.target = picked.cfg.variants.fall_red
-	else
-		picked.target = picked.cfg.variants.fall_yellow
+	return (h1 * 1103515245 + h2 * 12345 + (salt or 0) * 214013 + 2147483647) % 2147483647
+end
+
+function seasons.texture_plan.pick_target_node_for_pos(node_name, state, pos)
+	local picked = seasons.texture_plan.pick_target_node(node_name, state)
+	if not picked then return nil end
+
+	local cfg = picked.cfg
+	local w = picked.weights
+	local order = {"spring", "summer", "fall", "winter"}
+
+	local sum = 0
+	local season_weights = {}
+	for i = 1, #order do
+		local s = order[i]
+		local vn = cfg.variants[s]
+		if vn then
+			local ww = math.max(0, w[s] or 0)
+			season_weights[s] = ww
+			sum = sum + ww
+		end
 	end
+
+	if sum <= 0 then
+		picked.target = cfg.variants.summer or picked.target
+		return picked
+	end
+
+	local r = (mixed_hash(pos, 73) % 100000) / 100000
+	local acc = 0
+	local chosen = "summer"
+	for i = 1, #order do
+		local s = order[i]
+		local ww = season_weights[s] or 0
+		if ww > 0 then
+			acc = acc + (ww / sum)
+			if r < acc then
+				chosen = s
+				break
+			end
+		end
+	end
+
+	if chosen == "fall" and cfg.variants.fall_red and cfg.variants.fall_yellow then
+		local r2 = (mixed_hash(pos, 151) % 100000) / 100000
+		if r2 < 0.45 then
+			picked.target = cfg.variants.fall_red
+		else
+			picked.target = cfg.variants.fall_yellow
+		end
+	else
+		picked.target = cfg.variants[chosen] or picked.target
+	end
+
 	return picked
 end

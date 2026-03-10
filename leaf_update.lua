@@ -1,13 +1,22 @@
 seasons.leaf_update = {
 	accum = 0,
+	bg_accum = 0,
 	player_cursor = 1,
-	last_epoch = nil,
 }
 
 local TRACKED = {
 	"mcl_core:dirt_with_grass",
 	"seasons:dirt_with_grass_spring",
 	"seasons:dirt_with_grass_winter",
+	"mcl_flowers:tallgrass",
+	"seasons:tallgrass_spring",
+	"seasons:tallgrass_winter",
+	"mcl_flowers:double_grass",
+	"seasons:double_grass_spring",
+	"seasons:double_grass_winter",
+	"mcl_flowers:double_grass_top",
+	"seasons:double_grass_top_spring",
+	"seasons:double_grass_top_winter",
 	"mcl_core:leaves",
 	"seasons:oak_leaves_spring",
 	"seasons:oak_leaves_fall_red",
@@ -38,10 +47,16 @@ local function apply_at_pos(pos, node, force)
 	-- Epoch-style updates should be deterministic: if stale, apply target directly.
 	if picked.target ~= node.name then
 		minetest.swap_node(pos, {name = picked.target, param1 = node.param1, param2 = node.param2})
+		meta:set_int(EPOCH_META_KEY, current_epoch)
+		return true
 	end
 
-	meta:set_int(EPOCH_META_KEY, current_epoch)
-	return true
+	-- Do not lock unchanged nodes for the whole epoch; this allows gradual
+	-- transition progress within the same epoch as seasonal weights move.
+	if force then
+		meta:set_int(EPOCH_META_KEY, current_epoch)
+	end
+	return false
 end
 
 local function process_player_area(player, budget, force)
@@ -57,8 +72,45 @@ local function process_player_area(player, budget, force)
 
 	local touched = 0
 	local checks_left = math.min(#nodes, budget * 8)
-	for i = 1, checks_left do
-		local npos = nodes[i]
+	local start = math.random(1, #nodes)
+	for i = 0, checks_left - 1 do
+		local idx = ((start + i - 1) % #nodes) + 1
+		local npos = nodes[idx]
+		local node = minetest.get_node(npos)
+		if apply_at_pos(npos, node, force) then
+			touched = touched + 1
+			if touched >= budget then
+				break
+			end
+		end
+	end
+
+	return touched
+end
+
+local function process_random_loaded_area(players, budget, force)
+	if budget <= 0 or #players == 0 then return 0 end
+
+	local player = players[math.random(1, #players)]
+	local p = vector.round(player:get_pos())
+	local r = math.max(16, seasons.config.leaf_bg_radius)
+	local ar = math.max(16, math.floor(r * 0.40))
+	local cx = p.x + math.random(-r, r)
+	local cz = p.z + math.random(-r, r)
+	local cy = p.y + math.random(-math.floor(ar * 0.5), math.floor(ar * 0.5))
+	local center = {x = cx, y = cy, z = cz}
+	local p1 = {x = center.x - ar, y = center.y - ar, z = center.z - ar}
+	local p2 = {x = center.x + ar, y = center.y + ar, z = center.z + ar}
+
+	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
+	if #nodes == 0 then return 0 end
+
+	local touched = 0
+	local checks_left = math.min(#nodes, budget * 10)
+	local start = math.random(1, #nodes)
+	for i = 0, checks_left - 1 do
+		local idx = ((start + i - 1) % #nodes) + 1
+		local npos = nodes[idx]
 		local node = minetest.get_node(npos)
 		if apply_at_pos(npos, node, force) then
 			touched = touched + 1
@@ -87,11 +139,12 @@ minetest.register_globalstep(function(dtime)
 		return
 	end
 
-	local epoch = seasons.model.current_leaf_epoch()
-	local epoch_changed = (seasons.leaf_update.last_epoch ~= epoch)
-	seasons.leaf_update.last_epoch = epoch
-	if not epoch_changed then
-		return
+	if seasons.config.leaf_bg_enable then
+		seasons.leaf_update.bg_accum = seasons.leaf_update.bg_accum + dtime
+		if seasons.leaf_update.bg_accum >= seasons.config.leaf_bg_interval then
+			seasons.leaf_update.bg_accum = 0
+			process_random_loaded_area(players, seasons.config.leaf_bg_budget, false)
+		end
 	end
 
 	local budget = seasons.config.leaf_update_budget
