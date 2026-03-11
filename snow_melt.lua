@@ -46,9 +46,9 @@ local function melt_pressure(state, year_pos)
 	local summer = 0
 
 	-- Phase map: summer=0.00, fall=0.25, winter=0.50, spring=0.75.
-	-- Ramp up through spring (0.60 -> 1.00), then stay high in summer (0.00 -> 0.18).
-	if y >= 0.60 then
-		spring = smoothstep(0.60, 1.00, y)
+	-- Ramp up through spring (0.55 -> 0.80), then stay high in summer (0.00 -> 0.18).
+	if y >= 0.55 then
+		spring = smoothstep(0.55, 0.80, y)
 	elseif y <= 0.18 then
 		summer = 1 - smoothstep(0.00, 0.18, y)
 	end
@@ -148,6 +148,13 @@ local function apply_at_pos(pos, node, force)
 	if pressure <= 0 then
 		meta:set_int(EPOCH_META_KEY, epoch)
 		return false
+	end
+
+	local clear_threshold = seasons.config.melt_force_clear_pressure or 0.75
+	if pressure >= clear_threshold then
+		local changed = clear_for_summer(pos, node)
+		meta:set_int(EPOCH_META_KEY, epoch)
+		return changed
 	end
 
 	local roll = seasonal_roll(pos, 1901)

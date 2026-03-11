@@ -31,4 +31,5 @@ seasons_melt_bg_enable (Enable Seasonal Melt Background Sweeper) bool true
 seasons_melt_bg_interval (Seasonal Melt Background Sweep Interval Seconds) float 12.0 1 300
 seasons_melt_bg_budget (Seasonal Melt Background Node Change Budget Per Sweep) int 80 1 5000
 seasons_melt_bg_radius (Seasonal Melt Background Sweep Radius Around Random Player) int 96 16 512
+seasons_melt_force_clear_pressure (Seasonal Melt Deterministic Clear Pressure Threshold) float 0.75 0 1
 seasons_melt_debug_log (Enable Seasonal Melt Debug Logging) bool false

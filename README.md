@@ -47,6 +47,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - Seasonal melt controller:
   - gradually melts snow + ice in spring
   - deterministic summer clear in non-permanent snow biomes
+  - deterministic spring clear once melt pressure passes configured threshold
   - LBM-on-load correction for stale unloaded chunks
   - background sweeper for loaded far-away areas
 

@@ -211,7 +211,7 @@ minetest.register_chatcommand("seasons_melt_state", {
 	description = "Show seasonal melt config/runtime values.",
 	func = function()
 		return true, string.format(
-			"melt_enable=%s melt_debug_log=%s year_days=%.3f melt_epoch_days=%.3f interval=%.2f budget=%d radius=%d bg_enable=%s bg_interval=%.2f bg_budget=%d bg_radius=%d",
+			"melt_enable=%s melt_debug_log=%s year_days=%.3f melt_epoch_days=%.3f interval=%.2f budget=%d radius=%d bg_enable=%s bg_interval=%.2f bg_budget=%d bg_radius=%d force_clear_pressure=%.2f",
 			tostring(seasons.config.melt_enable),
 			tostring(seasons.config.melt_debug_log),
 			seasons.config.year_days or 0,
@@ -222,7 +222,8 @@ minetest.register_chatcommand("seasons_melt_state", {
 			tostring(seasons.config.melt_bg_enable),
 			seasons.config.melt_bg_interval or 0,
 			seasons.config.melt_bg_budget or 0,
-			seasons.config.melt_bg_radius or 0
+			seasons.config.melt_bg_radius or 0,
+			seasons.config.melt_force_clear_pressure or 0
 		)
 	end,
 })

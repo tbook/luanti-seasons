@@ -37,6 +37,7 @@ seasons.config.melt_bg_enable = minetest.settings:get_bool("seasons_melt_bg_enab
 seasons.config.melt_bg_interval = tonumber(minetest.settings:get("seasons_melt_bg_interval")) or 12.0
 seasons.config.melt_bg_budget = tonumber(minetest.settings:get("seasons_melt_bg_budget")) or 80
 seasons.config.melt_bg_radius = tonumber(minetest.settings:get("seasons_melt_bg_radius")) or 96
+seasons.config.melt_force_clear_pressure = tonumber(minetest.settings:get("seasons_melt_force_clear_pressure")) or 0.75
 seasons.config.melt_debug_log = minetest.settings:get_bool("seasons_melt_debug_log", false)
 
 -- Virtual day offset for testing and command-driven season forcing.
