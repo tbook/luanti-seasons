@@ -72,6 +72,33 @@ seasons.texture_plan.leaf_blocks["mcl_core:birchleaves"] = {
 	},
 }
 
+seasons.texture_plan.leaf_blocks["mcl_core:spruceleaves"] = {
+	base = "mcl_core:spruceleaves",
+	variants = {
+		spring = "mcl_core:spruceleaves",
+		summer = "mcl_core:spruceleaves",
+		fall = "mcl_core:spruceleaves",
+		winter = "seasons:spruce_leaves_winter",
+	},
+	colors = {
+		-- Evergreen behavior: no spring/fall recolor, only subtle winter mute/darken.
+		winter = "^[hsl:0:-16:-32",
+	},
+	params = {
+		winter_thermal_start = 0.03,
+		winter_thermal_full = -0.12,
+		summer_thermal_start = 0.30,
+		summer_thermal_full = 0.52,
+		spring_band_min = -0.05,
+		spring_band_max = 0.36,
+		fall_band_min = -0.02,
+		fall_band_max = 0.42,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.0,
+		transition_rate = 0.20,
+	},
+}
+
 seasons.texture_plan.leaf_blocks["mcl_core:dirt_with_grass"] = {
 	base = "mcl_core:dirt_with_grass",
 	variants = {

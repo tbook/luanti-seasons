@@ -13,7 +13,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - `thermal`
   - `moisture`
   - `dthermal_dt`
-- Oak and birch leaves with variant nodes:
+- Oak, birch, and spruce leaves with variant nodes:
   - `seasons:oak_leaves_spring`
   - `mcl_core:leaves` (summer)
   - `seasons:oak_leaves_fall_red`
@@ -23,6 +23,8 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - `mcl_core:birchleaves` (summer)
   - `seasons:birch_leaves_fall`
   - `seasons:birch_leaves_winter`
+  - `mcl_core:spruceleaves` (spring/summer/fall)
+  - `seasons:spruce_leaves_winter`
 - Grass block (`mcl_core:dirt_with_grass`) with variant nodes:
   - `seasons:dirt_with_grass_spring`
   - `mcl_core:dirt_with_grass` (summer/fall)
