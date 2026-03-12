@@ -22,6 +22,10 @@ local TRACKED = {
 	"seasons:oak_leaves_fall_red",
 	"seasons:oak_leaves_fall_yellow",
 	"seasons:oak_leaves_winter",
+	"mcl_core:birchleaves",
+	"seasons:birch_leaves_spring",
+	"seasons:birch_leaves_fall",
+	"seasons:birch_leaves_winter",
 }
 
 local EPOCH_META_KEY = "seasons:leaf_epoch"

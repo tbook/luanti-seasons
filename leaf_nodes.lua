@@ -96,6 +96,15 @@ local function register_oak_variants()
 	register_variant_node("mcl_core:leaves", cfg.variants.winter, "(Winter)", cfg.colors.winter)
 end
 
+local function register_birch_variants()
+	local cfg = seasons.texture_plan.leaf_blocks["mcl_core:birchleaves"]
+	if not cfg then return end
+
+	register_variant_node("mcl_core:birchleaves", cfg.variants.spring, "(Spring)", cfg.colors.spring)
+	register_variant_node("mcl_core:birchleaves", cfg.variants.fall, "(Fall)", cfg.colors.fall)
+	register_variant_node("mcl_core:birchleaves", cfg.variants.winter, "(Winter)", cfg.colors.winter)
+end
+
 local function register_grass_variant_node(base_name, variant_name, description_suffix, modifier)
 	local base_def = minetest.registered_nodes[base_name]
 	if not base_def then
@@ -230,5 +239,6 @@ local function register_tallgrass_variants()
 end
 
 register_oak_variants()
+register_birch_variants()
 register_grass_variants()
 register_tallgrass_variants()

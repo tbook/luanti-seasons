@@ -42,6 +42,36 @@ seasons.texture_plan.leaf_blocks = {
 	}
 }
 
+seasons.texture_plan.leaf_blocks["mcl_core:birchleaves"] = {
+	base = "mcl_core:birchleaves",
+	variants = {
+		spring = "seasons:birch_leaves_spring",
+		summer = "mcl_core:birchleaves",
+		fall = "seasons:birch_leaves_fall",
+		winter = "seasons:birch_leaves_winter",
+	},
+	colors = {
+		spring = "#A9F88A:86",
+		-- Birch autumn hsl test (no mask).
+		fall = "^[hsl:8:39:16",
+		-- Debug baseline: no color transform, just preserve alpha.
+		winter = "^[mask:mcl_core_leaves_birch.png",
+	},
+	params = {
+		winter_thermal_start = 0.03,
+		winter_thermal_full = -0.12,
+		summer_thermal_start = 0.30,
+		summer_thermal_full = 0.52,
+		spring_band_min = -0.05,
+		spring_band_max = 0.36,
+		fall_band_min = -0.02,
+		fall_band_max = 0.42,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.10,
+		transition_rate = 0.20,
+	},
+}
+
 seasons.texture_plan.leaf_blocks["mcl_core:dirt_with_grass"] = {
 	base = "mcl_core:dirt_with_grass",
 	variants = {
