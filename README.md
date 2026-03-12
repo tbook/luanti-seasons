@@ -61,6 +61,8 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 
 - `/seasons_state`
   - Show current phase, derived season, biome and state values at your position.
+- `/seasons_species_state`
+  - Show oak/birch/spruce seasonal weights side-by-side at your position.
 - `/seasons_set_day <day_float>`
   - Set virtual seasons day (days since world start, fractional allowed).
 - `/seasons_set_season <spring|summer|fall|winter>`

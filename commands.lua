@@ -48,6 +48,53 @@ minetest.register_chatcommand("seasons_state", {
 	end,
 })
 
+minetest.register_chatcommand("seasons_species_state", {
+	params = "",
+	description = "Show seasonal weights for oak, birch, and spruce at your position.",
+	func = function(name)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Player not found."
+		end
+		local pos = vector.round(player:get_pos())
+		local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(pos)
+		if not state or not ctx then
+			return false, "No biome/state data at your position."
+		end
+
+		local function line_for(node_name, label)
+			local cfg = seasons.texture_plan.leaf_blocks[node_name]
+			if not cfg then
+				return label .. ": n/a"
+			end
+			local w = seasons.texture_plan.weights_for_leaf(cfg, state)
+			local best, bestv = season_label_from_weights(w)
+			return string.format(
+				"%s=%s(%.2f) s=%.2f su=%.2f f=%.2f w=%.2f",
+				label,
+				best,
+				bestv or 0,
+				w.spring or 0,
+				w.summer or 0,
+				w.fall or 0,
+				w.winter or 0
+			)
+		end
+
+		return true, string.format(
+			"phase=%.3f biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f | %s | %s | %s",
+			seasons.model.current_year_pos(),
+			ctx.name or "?",
+			state.thermal,
+			state.moisture,
+			state.dthermal_dt,
+			line_for("mcl_core:leaves", "oak"),
+			line_for("mcl_core:birchleaves", "birch"),
+			line_for("mcl_core:spruceleaves", "spruce")
+		)
+	end,
+})
+
 minetest.register_chatcommand("seasons_set_day", {
 	params = "<day_float>",
 	description = "Set virtual seasons day (days since world start, may be fractional).",

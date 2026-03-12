@@ -52,16 +52,17 @@ seasons.texture_plan.leaf_blocks["mcl_core:birchleaves"] = {
 	},
 	colors = {
 		spring = "#A9F88A:86",
-		-- Birch autumn hsl test (no mask).
+		-- Birch autumn target.
 		fall = "^[hsl:8:39:16",
-		-- Debug baseline: no color transform, just preserve alpha.
+		-- Birch winter target (base brown texture).
 		winter = "^[mask:mcl_core_leaves_birch.png",
 	},
 	params = {
-		winter_thermal_start = 0.03,
-		winter_thermal_full = -0.12,
-		summer_thermal_start = 0.30,
-		summer_thermal_full = 0.52,
+		-- Birch shifts a bit earlier than oak.
+		winter_thermal_start = 0.05,
+		winter_thermal_full = -0.10,
+		summer_thermal_start = 0.28,
+		summer_thermal_full = 0.50,
 		spring_band_min = -0.05,
 		spring_band_max = 0.36,
 		fall_band_min = -0.02,
@@ -85,8 +86,9 @@ seasons.texture_plan.leaf_blocks["mcl_core:spruceleaves"] = {
 		winter = "^[hsl:0:-16:-32",
 	},
 	params = {
-		winter_thermal_start = 0.03,
-		winter_thermal_full = -0.12,
+		-- Spruce winter shift is subtler and starts slightly later than deciduous leaves.
+		winter_thermal_start = 0.00,
+		winter_thermal_full = -0.15,
 		summer_thermal_start = 0.30,
 		summer_thermal_full = 0.52,
 		spring_band_min = -0.05,
