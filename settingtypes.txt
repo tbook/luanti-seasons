@@ -17,7 +17,7 @@ seasons_flower_dormancy_epoch_days (Flower Dormancy Epoch Length In In-Game Days
 seasons_flower_dormancy_update_interval (Flower Dormancy Update Interval Seconds) float 1.0 0.1 60
 seasons_flower_dormancy_update_budget (Flower Dormancy Node Swap Budget Per Tick) int 260 1 5000
 seasons_flower_dormancy_scan_radius (Flower Dormancy Scan Radius Around Player) int 24 4 96
-seasons_flower_dormancy_transition_days (Flower Dormancy Transition Window In In-Game Days) float 3.0 1.0 10.0
+seasons_flower_dormancy_transition_days (Flower Dormancy Spring Recovery Window In In-Game Days) float 3.0 1.0 10.0
 seasons_weather_bias_enable (Enable Seasonal Weather Snow Bias) bool true
 seasons_weather_epoch_days (Weather Bias Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_weather_snow_bias_strength (Seasonal Snow Bias Strength) float 0.85 0 1

@@ -38,6 +38,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - excludes Nether/End and beach/ocean biome variants
   - only manages flowers placed by this mod
 - Flower dormancy controller (non-managed small flowers + ferns):
+  - phase ramp starts in late fall and reaches full dormancy at winter start
   - swaps flowers to dormant winter stumps in winter
   - restores original flowers in spring
   - uses gradual budgeted updates and LBM-on-load correction

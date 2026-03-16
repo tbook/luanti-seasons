@@ -54,15 +54,14 @@ local function node_threshold(pos)
 end
 
 local function dormant_target(year_pos)
-	-- Smoothly enter dormancy around fall->winter boundary (~0.50),
+	-- Smoothly enter dormancy through late fall [0.35, 0.50],
 	-- then smoothly restore around winter->spring boundary (~0.75).
 	local y = year_pos or seasons.model.current_year_pos()
+	local up_start = 0.35
+	local up_end = 0.50
 	local ydays = math.max(1, seasons.config.year_days or 20)
 	local days = math.max(1.0, seasons.config.flower_dormancy_transition_days or 3.0)
 	local half = (days / ydays) * 0.5
-
-	local up_start = 0.50 - half
-	local up_end = 0.50 + half
 	local down_start = 0.75 - half
 	local down_end = 0.75 + half
 
