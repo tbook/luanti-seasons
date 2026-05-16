@@ -22,6 +22,8 @@ minetest.register_alias_force("seasons:oak_leaves_fall_dbg3_red_orphan", "season
 minetest.register_alias_force("seasons:oak_leaves_fall_dbg1_yellow_orphan", "seasons:oak_leaves_fall_yellow_orphan")
 minetest.register_alias_force("seasons:oak_leaves_fall_dbg2_yellow_orphan", "seasons:oak_leaves_fall_yellow_orphan")
 minetest.register_alias_force("seasons:oak_leaves_fall_dbg3_yellow_orphan", "seasons:oak_leaves_fall_yellow_orphan")
+minetest.register_alias_force("seasons:double_grass_spring_top", "seasons:double_grass_top_spring")
+minetest.register_alias_force("seasons:double_grass_winter_top", "seasons:double_grass_top_winter")
 
 local function copy_groups(groups)
 	local g = table.copy(groups or {})
