@@ -13,12 +13,17 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - `thermal`
   - `moisture`
   - `dthermal_dt`
-- Oak, birch, and spruce leaves with variant nodes:
+- Oak, dark oak, birch, and spruce leaves with variant nodes:
   - `seasons:oak_leaves_spring`
   - `mcl_core:leaves` (summer)
   - `seasons:oak_leaves_fall_red`
   - `seasons:oak_leaves_fall_yellow`
   - `seasons:oak_leaves_winter`
+  - `seasons:dark_oak_leaves_spring`
+  - `mcl_core:darkleaves` (summer)
+  - `seasons:dark_oak_leaves_fall_red`
+  - `seasons:dark_oak_leaves_fall_yellow`
+  - `seasons:dark_oak_leaves_winter`
   - `seasons:birch_leaves_spring`
   - `mcl_core:birchleaves` (summer)
   - `seasons:birch_leaves_fall`
@@ -63,7 +68,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - `/seasons_state`
   - Show current phase, derived season, biome and state values at your position.
 - `/seasons_species_state`
-  - Show oak/birch/spruce seasonal weights side-by-side at your position.
+  - Show oak/dark oak/birch/spruce seasonal weights side-by-side at your position.
 - `/seasons_set_day <day_float>`
   - Set virtual seasons day (days since world start, fractional allowed).
 - `/seasons_set_season <spring|summer|fall|winter>`

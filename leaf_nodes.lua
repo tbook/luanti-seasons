@@ -96,6 +96,16 @@ local function register_oak_variants()
 	register_variant_node("mcl_core:leaves", cfg.variants.winter, "(Winter)", cfg.colors.winter)
 end
 
+local function register_dark_oak_variants()
+	local cfg = seasons.texture_plan.leaf_blocks["mcl_core:darkleaves"]
+	if not cfg then return end
+
+	register_variant_node("mcl_core:darkleaves", cfg.variants.spring, "(Spring)", cfg.colors.spring)
+	register_variant_node("mcl_core:darkleaves", cfg.variants.fall_red, "(Fall Red)", cfg.colors.fall_red)
+	register_variant_node("mcl_core:darkleaves", cfg.variants.fall_yellow, "(Fall Yellow)", cfg.colors.fall_yellow)
+	register_variant_node("mcl_core:darkleaves", cfg.variants.winter, "(Winter)", cfg.colors.winter)
+end
+
 local function register_birch_variants()
 	local cfg = seasons.texture_plan.leaf_blocks["mcl_core:birchleaves"]
 	if not cfg then return end
@@ -245,6 +255,7 @@ local function register_tallgrass_variants()
 end
 
 register_oak_variants()
+register_dark_oak_variants()
 register_birch_variants()
 register_spruce_variants()
 register_grass_variants()

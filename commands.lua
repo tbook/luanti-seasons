@@ -50,7 +50,7 @@ minetest.register_chatcommand("seasons_state", {
 
 minetest.register_chatcommand("seasons_species_state", {
 	params = "",
-	description = "Show seasonal weights for oak, birch, and spruce at your position.",
+	description = "Show seasonal weights for oak, dark oak, birch, and spruce at your position.",
 	func = function(name)
 		local player = minetest.get_player_by_name(name)
 		if not player then
@@ -82,13 +82,14 @@ minetest.register_chatcommand("seasons_species_state", {
 		end
 
 		return true, string.format(
-			"phase=%.3f biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f | %s | %s | %s",
+			"phase=%.3f biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f | %s | %s | %s | %s",
 			seasons.model.current_year_pos(),
 			ctx.name or "?",
 			state.thermal,
 			state.moisture,
 			state.dthermal_dt,
 			line_for("mcl_core:leaves", "oak"),
+			line_for("mcl_core:darkleaves", "dark_oak"),
 			line_for("mcl_core:birchleaves", "birch"),
 			line_for("mcl_core:spruceleaves", "spruce")
 		)
