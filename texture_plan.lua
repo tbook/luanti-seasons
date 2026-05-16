@@ -73,6 +73,39 @@ seasons.texture_plan.leaf_blocks["mcl_core:birchleaves"] = {
 	},
 }
 
+seasons.texture_plan.leaf_blocks["mcl_core:darkleaves"] = {
+	base = "mcl_core:darkleaves",
+	variants = {
+		spring = "seasons:dark_oak_leaves_spring",
+		summer = "mcl_core:darkleaves",
+		fall = "seasons:dark_oak_leaves_fall_red",
+		fall_red = "seasons:dark_oak_leaves_fall_red",
+		fall_yellow = "seasons:dark_oak_leaves_fall_yellow",
+		winter = "seasons:dark_oak_leaves_winter",
+	},
+	colors = {
+		spring = "#98FF7A:90",
+		-- Direct color transform works better here than re-masking the big oak texture.
+		fall_red = "^[hsl:-96:46:-16^[colorizehsl:22:38:-6",
+		fall_yellow = "^[hsl:-72:56:-14^[colorizehsl:38:48:-6",
+		winter = "^[multiply:#70583F^[colorize:#9B7E60:88",
+	},
+	params = {
+		-- Dark oak holds summer slightly longer than regular oak in cooler forests.
+		winter_thermal_start = 0.03,
+		winter_thermal_full = -0.12,
+		summer_thermal_start = 0.26,
+		summer_thermal_full = 0.48,
+		spring_band_min = -0.05,
+		spring_band_max = 0.36,
+		fall_band_min = -0.02,
+		fall_band_max = 0.42,
+		dthermal_scale = 0.22,
+		moisture_fall_bonus = 0.20,
+		transition_rate = 0.20,
+	},
+}
+
 seasons.texture_plan.leaf_blocks["mcl_core:spruceleaves"] = {
 	base = "mcl_core:spruceleaves",
 	variants = {
