@@ -82,6 +82,23 @@ function seasons.model.current_melt_epoch()
 	return math.floor(seasons.model.current_day_float() / span)
 end
 
+-- Thermal delta (<= 0) applied for standing at pos_y. Linear lapse rate above a
+-- base altitude, clamped; disabled at/above the floatland cutoff so floating
+-- islands are not driven arctic.
+function seasons.model.elevation_thermal_offset(pos_y)
+	local c = seasons.config
+	if not c or not c.elevation_cooling_enable then return 0 end
+	local y = tonumber(pos_y) or 0
+	local cutoff = c.elevation_cooling_floatland_y
+	if cutoff and y >= cutoff then return 0 end
+	local rise = y - (c.elevation_cooling_base_y or 0)
+	if rise <= 0 then return 0 end
+	local drop = rise * (c.elevation_cooling_per_node or 0)
+	local max_drop = c.elevation_cooling_max or 0
+	if drop > max_drop then drop = max_drop end
+	return -drop
+end
+
 -- Compute the 3 core state variables for a biome profile.
 function seasons.model.compute_state(year_pos, biome_profile)
 	local a_t = biome_profile.amp_temp or 0
@@ -103,6 +120,18 @@ function seasons.model.compute_state(year_pos, biome_profile)
 		moisture = moisture,
 		dthermal_dt = dthermal_dt,
 	}
+end
+
+-- compute_state, then apply the altitude lapse rate to thermal only. moisture
+-- and dthermal_dt are altitude-independent (the *rate* of seasonal change does
+-- not vary with height).
+function seasons.model.compute_state_at(year_pos, biome_profile, pos_y)
+	local state = seasons.model.compute_state(year_pos, biome_profile)
+	local off = seasons.model.elevation_thermal_offset(pos_y)
+	if off ~= 0 then
+		state.thermal = state.thermal + off
+	end
+	return state
 end
 
 function seasons.model.springness(state)

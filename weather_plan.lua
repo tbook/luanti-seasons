@@ -123,11 +123,11 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 	end
 
 	local epoch = seasons.model.current_weather_epoch()
-	local biome_key = tostring(ctx.name or "?")
+	local biome_key = tostring(ctx.name or "?") .. ":" .. math.floor((pos.y or 0) / 64)
 	local c = bias_cache[biome_key]
 	if not c or c.epoch ~= epoch then
 		local profile = seasons.biome_profiles.resolve_for_registered_biome(ctx.reg)
-		local state = seasons.model.compute_state(seasons.model.current_year_pos(), profile)
+		local state = seasons.model.compute_state_at(seasons.model.current_year_pos(), profile, pos.y)
 		c = {
 			epoch = epoch,
 			state = state,

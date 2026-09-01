@@ -44,11 +44,12 @@ local function player_state_line(player)
 	local season = season_label_from_weights(weights)
 	local phase = seasons.model.current_year_pos()
 	return true, string.format(
-		"phase=%.3f season=%s biome=%s thermal=%.3f moisture=%.3f dthermal_dt=%.3f weights{spring=%.2f summer=%.2f fall=%.2f winter=%.2f}",
+		"phase=%.3f season=%s biome=%s thermal=%.3f elev_dT=%.3f moisture=%.3f dthermal_dt=%.3f weights{spring=%.2f summer=%.2f fall=%.2f winter=%.2f}",
 		phase,
 		season,
 		ctx.name or "?",
 		state.thermal,
+		seasons.model.elevation_thermal_offset(pos.y),
 		state.moisture,
 		state.dthermal_dt,
 		weights.spring or 0,
