@@ -127,7 +127,7 @@ minetest.register_globalstep(function(dtime)
 	for i = 0, #players - 1 do
 		if budget <= 0 then break end
 		local idx = ((start + i - 1) % #players) + 1
-		budget = budget - process_player_area(players[idx], budget, false)
+		budget = budget - seasons.leaf_update.process_player_area(players[idx], budget, false)
 	end
 
 	seasons.leaf_update.player_cursor = start + 1

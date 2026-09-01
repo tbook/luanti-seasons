@@ -18,6 +18,14 @@ The current tests focus on modules that are cheap to validate outside the game e
 - `model.lua`
 - `biome_profiles.lua`
 - `texture_plan.lua`
+- `update_sweep.lua`
+
+`spec/load_smoke_spec.lua` is a different shape: it loads every module through
+`init.lua` against a stubbed engine and fires each registered globalstep, LBM
+and chatcommand. It asserts almost nothing about behaviour. Its job is to catch
+load-time and first-tick breakage -- calls to renamed locals, missing globals,
+bad load order -- which the pure-logic specs cannot see and which otherwise
+only shows up as a crash on launch.
 
 This is where the most important seasonal regressions tend to show up:
 

@@ -321,7 +321,7 @@ minetest.register_globalstep(function(dtime)
 	for i = 0, #players - 1 do
 		if budget <= 0 then break end
 		local idx = ((start + i - 1) % #players) + 1
-		budget = budget - process_player_area(players[idx], budget, false)
+		budget = budget - seasons.flower_dormancy.process_player_area(players[idx], budget, false)
 	end
 
 	seasons.flower_dormancy.player_cursor = start + 1
