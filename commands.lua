@@ -6,8 +6,9 @@ minetest.register_chatcommand("seasons_update_status", {
 	func = function()
 		local st = seasons.update_sweep.status()
 		return true, string.format(
-			"radius=%d interval=%.2fs mapblocks_per_step=%d progress=%d/%d players=%d checked=%d loaded=%d cycles=%d last_cycle=%.1fs",
+			"radius=%d vradius=%d interval=%.2fs mapblocks_per_step=%d progress=%d/%d players=%d checked=%d loaded=%d cycles=%d last_cycle=%.1fs",
 			st.radius,
+			st.vertical_radius,
 			st.interval,
 			st.mapblocks_per_step,
 			st.progress_mapblock,

@@ -166,26 +166,20 @@ local function apply_at_pos(pos, node, force)
 	return changed
 end
 
-local function process_player_area(player, budget, force)
-	if budget <= 0 then return 0 end
-
-	local pos = vector.round(player:get_pos())
-	local r = seasons.config.melt_scan_radius
-	local p1 = {x = pos.x - r, y = pos.y - r, z = pos.z - r}
-	local p2 = {x = pos.x + r, y = pos.y + r, z = pos.z + r}
+-- Shared scan for both the player-proximate path and the far-area sweep.
+-- Returns touched plus the counts the debug log wants, so neither caller
+-- needs its own copy of the loop.
+local function scan_area(p1, p2, budget, force)
+	if budget <= 0 then return 0, 0, 0 end
 
 	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
-	if #nodes == 0 then
-		mlog(string.format("fg player=%s epoch=%d y=%.3f nodes=0 budget=%d force=%s", player:get_player_name(), seasons.model.current_melt_epoch(), seasons.model.current_year_pos(), budget, tostring(force)))
-		return 0
-	end
+	if #nodes == 0 then return 0, 0, 0 end
 
 	local touched = 0
-	local checks_left = math.min(#nodes, budget * 8)
-	for i = 1, checks_left do
+	local checks = math.min(#nodes, budget * 8)
+	for i = 1, checks do
 		local npos = nodes[i]
-		local node = minetest.get_node(npos)
-		if apply_at_pos(npos, node, force) then
+		if apply_at_pos(npos, minetest.get_node(npos), force) then
 			touched = touched + 1
 			if touched >= budget then
 				break
@@ -193,48 +187,65 @@ local function process_player_area(player, budget, force)
 		end
 	end
 
-	if touched == 0 and #nodes > 0 and seasons.config.melt_debug_log then
-		local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(nodes[1])
-		if state and ctx then
-			local y = seasons.model.current_year_pos()
-			mlog(string.format(
-				"fg player=%s epoch=%d y=%.3f nodes=%d checks=%d changed=0 force=%s biome=%s thermal=%.3f pressure=%.3f peak_summer=%s permanent=%s",
-				player:get_player_name(),
-				seasons.model.current_melt_epoch(),
-				y,
-				#nodes,
-				checks_left,
-				tostring(force),
-				ctx.name or "?",
-				state.thermal or 0,
-				melt_pressure(state, y),
-				tostring(is_peak_summer(state, y)),
-				tostring(seasons.weather_plan.is_permanent_snow_biome(ctx))
-			))
-		end
+	return touched, #nodes, checks, nodes[1]
+end
+
+-- Why did a melt pass do nothing? Sample the first tracked node and report the
+-- inputs that decide it. Throttled because the sweep runs many areas a second.
+local function log_idle_area(label, sample, node_count, checks)
+	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(sample)
+	if not (state and ctx) then return end
+	local y = seasons.model.current_year_pos()
+	mlog(string.format(
+		"%s epoch=%d y=%.3f nodes=%d checks=%d changed=0 biome=%s thermal=%.3f pressure=%.3f peak_summer=%s permanent=%s",
+		label,
+		seasons.model.current_melt_epoch(),
+		y,
+		node_count,
+		checks,
+		ctx.name or "?",
+		state.thermal or 0,
+		melt_pressure(state, y),
+		tostring(is_peak_summer(state, y)),
+		tostring(seasons.weather_plan.is_permanent_snow_biome(ctx))
+	))
+end
+
+local function process_player_area(player, budget, force)
+	local pos = vector.round(player:get_pos())
+	local r = seasons.config.melt_scan_radius
+	local touched, node_count, checks, sample = scan_area(
+		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+		budget,
+		force
+	)
+
+	if node_count == 0 then
+		mlog(string.format("fg player=%s epoch=%d y=%.3f nodes=0 budget=%d force=%s", player:get_player_name(), seasons.model.current_melt_epoch(), seasons.model.current_year_pos(), budget, tostring(force)))
+	elseif touched == 0 and seasons.config.melt_debug_log then
+		log_idle_area("fg player=" .. player:get_player_name(), sample, node_count, checks)
 	else
-		mlog(string.format("fg player=%s epoch=%d y=%.3f nodes=%d checks=%d changed=%d force=%s", player:get_player_name(), seasons.model.current_melt_epoch(), seasons.model.current_year_pos(), #nodes, checks_left, touched, tostring(force)))
+		mlog(string.format("fg player=%s epoch=%d y=%.3f nodes=%d checks=%d changed=%d force=%s", player:get_player_name(), seasons.model.current_melt_epoch(), seasons.model.current_year_pos(), node_count, checks, touched, tostring(force)))
 	end
 
 	return touched
 end
 
-local function process_area(p1, p2, budget, force)
-	if budget <= 0 then return 0 end
-	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
-	if #nodes == 0 then return 0 end
+local SWEEP_LOG_INTERVAL_US = 5000000
+local sweep_log_next = 0
 
-	local touched = 0
-	local checks_left = math.min(#nodes, budget * 10)
-	local start = math.random(1, #nodes)
-	for i = 0, checks_left - 1 do
-		local idx = ((start + i - 1) % #nodes) + 1
-		local npos = nodes[idx]
-		if apply_at_pos(npos, minetest.get_node(npos), force) then
-			touched = touched + 1
-			if touched >= budget then break end
+local function process_area(p1, p2, budget, force)
+	local touched, node_count, checks, sample = scan_area(p1, p2, budget, force)
+
+	if touched == 0 and node_count > 0 and seasons.config.melt_debug_log then
+		local now = minetest.get_us_time()
+		if now >= sweep_log_next then
+			sweep_log_next = now + SWEEP_LOG_INTERVAL_US
+			log_idle_area(string.format("sweep (%d,%d,%d)", p1.x, p1.y, p1.z), sample, node_count, checks)
 		end
 	end
+
 	return touched
 end
 

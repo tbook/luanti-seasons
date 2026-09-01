@@ -68,15 +68,19 @@ end
 
 local function process_area(p1, p2, sample_pos, budget, force)
 	if budget <= 0 then return 0 end
-	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(sample_pos)
-	if not state or not ctx then return 0 end
-	if not seasons.compat_voxelibre.is_temperate_flower_biome(ctx) then
-		return 0
-	end
 
 	local flowers = minetest.find_nodes_in_area(p1, p2, MANAGED_FLOWERS)
 	local grounds = minetest.find_nodes_in_area_under_air(p1, p2, seasons.flowers_plan.ground_nodes)
 	if #grounds == 0 then
+		return 0
+	end
+
+	-- Sample the biome on real ground. A geometric box centre is usually
+	-- underground or in mid-air, which reads a different biome than the
+	-- spots we would actually plant on.
+	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(sample_pos or grounds[1])
+	if not state or not ctx then return 0 end
+	if not seasons.compat_voxelibre.is_temperate_flower_biome(ctx) then
 		return 0
 	end
 
@@ -127,12 +131,7 @@ function seasons.flowers_update.process_player_area(player, budget, force)
 end
 
 function seasons.flowers_update.process_area(p1, p2, budget, force)
-	local center = {
-		x = math.floor((p1.x + p2.x) / 2),
-		y = math.floor((p1.y + p2.y) / 2),
-		z = math.floor((p1.z + p2.z) / 2),
-	}
-	return process_area(p1, p2, center, budget, force)
+	return process_area(p1, p2, nil, budget, force)
 end
 
 minetest.register_globalstep(function(dtime)
@@ -171,7 +170,7 @@ minetest.register_globalstep(function(dtime)
 end)
 
 seasons.update_sweep.register_provider("flowers", {
-	enabled = function() return true end,
+	enabled = function() return seasons.config.flower_sweep_enable end,
 	radius = function() return seasons.config.update_radius end,
 	budget = function() return seasons.config.flower_update_budget end,
 	process_area = seasons.flowers_update.process_area,
