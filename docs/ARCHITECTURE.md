@@ -27,5 +27,6 @@
 - Flower dormancy adaptation: active prototype swapping non-managed flowers to/from dormant winter stumps.
 - Weather adaptation: active prototype for seasonal snow bias via weather compatibility hook.
 - Melt adaptation: active prototype for seasonal spring melt + summer clear with load-time correction.
+- Elevation cooling: `seasons.model.compute_state_at` applies a clamped linear lapse rate to `thermal` by `pos.y` (via `seasons.model.elevation_thermal_offset`), so mountain snowlines and permanent snowcaps fall out of the existing weather-bias and melt logic. Disabled at/above a configurable floatland cutoff.
 - Updater: fast player-area scans plus a deterministic, budgeted mapblock sweep for loaded far areas. Each subsystem keeps an independent cursor and cadence; unloaded mapblocks are skipped rather than emerged. Cursors survive player movement so a walking player's frontier still reaches the configured radius, and an exhausted budget pauses the cursor rather than stepping past unprocessed mapblocks.
 - Commands: active (state/set/force commands for foliage, flowers, dormancy, weather, and melt).

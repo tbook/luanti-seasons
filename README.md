@@ -48,6 +48,12 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
   - restores original flowers in spring
   - uses gradual budgeted updates and LBM-on-load correction
   - uses a cold-sensitive target so true winter temperatures drive near-full dormancy
+- Elevation cooling (optional, on by default):
+  - applies a linear temperature lapse rate to `thermal` above a base height
+  - tall mountains get a winter snowline and high peaks stay snow-covered,
+    reusing the existing weather-bias and melt paths (no snow placement code)
+  - disabled at/above a configurable height so floatlands are not driven arctic
+  - tune with `seasons_elevation_cooling_*` in `settingtypes.txt`
 - Seasonal weather framework (lightweight):
   - wraps VoxeLibre `mcl_weather.has_snow(pos)` with seasonal bias
   - winter-biased snow probability from biome data + season state

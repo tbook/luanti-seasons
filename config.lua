@@ -34,6 +34,12 @@ seasons.config.weather_bias_enable = minetest.settings:get_bool("seasons_weather
 seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)
 seasons.config.weather_snow_bias_strength = tonumber(minetest.settings:get("seasons_weather_snow_bias_strength")) or 0.55
 
+seasons.config.elevation_cooling_enable = minetest.settings:get_bool("seasons_elevation_cooling_enable", true)
+seasons.config.elevation_cooling_base_y = tonumber(minetest.settings:get("seasons_elevation_cooling_base_y")) or 0
+seasons.config.elevation_cooling_per_node = tonumber(minetest.settings:get("seasons_elevation_cooling_per_node")) or 0.00125
+seasons.config.elevation_cooling_max = tonumber(minetest.settings:get("seasons_elevation_cooling_max")) or 0.55
+seasons.config.elevation_cooling_floatland_y = tonumber(minetest.settings:get("seasons_elevation_cooling_floatland_y")) or 1000
+
 seasons.config.melt_enable = minetest.settings:get_bool("seasons_melt_enable", true)
 seasons.config.melt_epoch_days = tonumber(minetest.settings:get("seasons_melt_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)
 seasons.config.melt_update_interval = tonumber(minetest.settings:get("seasons_melt_update_interval")) or 2.0
