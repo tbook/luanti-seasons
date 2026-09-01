@@ -45,11 +45,11 @@ local function melt_pressure(state, year_pos)
 	local summer = 0
 
 	-- Phase map: summer=0.00, fall=0.25, winter=0.50, spring=0.75.
-	-- Ramp up through spring (0.55 -> 0.80), then stay high in summer (0.00 -> 0.18).
-	if y >= 0.55 then
-		spring = smoothstep(0.55, 0.80, y)
-	elseif y <= 0.18 then
-		summer = 1 - smoothstep(0.00, 0.18, y)
+	-- Ramp up through spring (0.48 -> 0.72), then stay high in summer (0.00 -> 0.24).
+	if y >= 0.48 then
+		spring = smoothstep(0.48, 0.72, y)
+	elseif y <= 0.24 then
+		summer = 1 - smoothstep(0.00, 0.24, y)
 	end
 
 	local thermal_factor = clamp01((state.thermal + 0.06) / 0.44)
@@ -58,7 +58,7 @@ end
 
 local function is_peak_summer(state, year_pos)
 	local y = year_pos or seasons.model.current_year_pos()
-	local summer_window = (y <= 0.14)
+	local summer_window = (y <= 0.20)
 	local warm_enough = state.thermal >= 0.22
 	return summer_window and warm_enough
 end
@@ -158,7 +158,7 @@ local function apply_at_pos(pos, node, force)
 
 	local roll = seasonal_roll(pos, 1901)
 	local changed = false
-	if force or roll < (pressure * 0.62) then
+	if force or roll < (pressure * 0.78) then
 		changed = step_melt_node(pos, node)
 	end
 

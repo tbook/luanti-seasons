@@ -32,7 +32,7 @@ seasons.config.flower_dormancy_transition_days = tonumber(minetest.settings:get(
 
 seasons.config.weather_bias_enable = minetest.settings:get_bool("seasons_weather_bias_enable", true)
 seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)
-seasons.config.weather_snow_bias_strength = tonumber(minetest.settings:get("seasons_weather_snow_bias_strength")) or 0.85
+seasons.config.weather_snow_bias_strength = tonumber(minetest.settings:get("seasons_weather_snow_bias_strength")) or 0.55
 
 seasons.config.melt_enable = minetest.settings:get_bool("seasons_melt_enable", true)
 seasons.config.melt_epoch_days = tonumber(minetest.settings:get("seasons_melt_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)
