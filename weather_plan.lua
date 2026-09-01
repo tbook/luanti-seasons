@@ -112,10 +112,25 @@ function seasons.weather_plan.sample_epoch_roll(pos, salt)
 	return (mixed % 10000) / 10000
 end
 
+-- Snap a position to a coarse horizontal grid before deciding snow bias.
+-- mcl_weather re-samples has_snow(player_pos) every server step, so a per-node
+-- answer makes snow + skybox strobe as you walk near a biome edge. One answer
+-- per cell means at most a single clean flip when you cross into another cell.
+local DECISION_GRID = 16
+local function decision_pos(pos)
+	return {
+		x = math.floor((pos.x or 0) / DECISION_GRID + 0.5) * DECISION_GRID,
+		y = pos.y or 0,
+		z = math.floor((pos.z or 0) / DECISION_GRID + 0.5) * DECISION_GRID,
+	}
+end
+
 function seasons.weather_plan.should_bias_to_snow(pos)
 	if not seasons.config.weather_bias_enable then
 		return false, nil
 	end
+
+	pos = decision_pos(pos)
 
 	local ctx = seasons.compat_voxelibre.get_biome_context(pos)
 	if not ctx then
@@ -123,11 +138,11 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 	end
 
 	local epoch = seasons.model.current_weather_epoch()
-	local biome_key = tostring(ctx.name or "?")
+	local biome_key = tostring(ctx.name or "?") .. ":" .. math.floor((pos.y or 0) / 64)
 	local c = bias_cache[biome_key]
 	if not c or c.epoch ~= epoch then
 		local profile = seasons.biome_profiles.resolve_for_registered_biome(ctx.reg)
-		local state = seasons.model.compute_state(seasons.model.current_year_pos(), profile)
+		local state = seasons.model.compute_state_at(seasons.model.current_year_pos(), profile, pos.y)
 		c = {
 			epoch = epoch,
 			state = state,
@@ -151,26 +166,15 @@ function seasons.weather_plan.should_bias_to_snow(pos)
 		}
 	end
 
-	-- Once seasonal signal is strong enough, make the bias deterministic.
-	-- This avoids confusing "winter but no snow bias" outcomes in temperate biomes.
-	local deterministic_threshold = 0.16
-	if chance >= deterministic_threshold then
-		return true, {
-			chance = chance,
-			roll = 0,
-			winterness = c.winterness,
-			snow_possible = c.snow_possible,
-			onset = c.onset,
-			state = c.state,
-			ctx = ctx,
-		}
-	end
-
-	local roll = seasons.weather_plan.sample_epoch_roll(pos, 901)
-	local ok = (roll < chance)
+	-- Deterministic step function: a biome/altitude/epoch either biases to snow
+	-- or it does not. No per-node RNG here -- combined with mcl_weather's
+	-- per-step has_snow() sampling it caused snow + skybox to strobe as a player
+	-- walked. Coarse grid (decision_pos) keeps the answer stable across a cell.
+	local threshold = clamp01(seasons.config.weather_snow_bias_threshold or 0.10)
+	local ok = chance >= threshold
 	return ok, {
 		chance = chance,
-		roll = roll,
+		roll = 0,
 		winterness = c.winterness,
 		snow_possible = c.snow_possible,
 		onset = c.onset,

@@ -26,6 +26,7 @@ seasons_flower_dormancy_transition_days (Flower Dormancy Spring Recovery Window 
 seasons_weather_bias_enable (Enable Seasonal Weather Snow Bias) bool true
 seasons_weather_epoch_days (Weather Bias Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_weather_snow_bias_strength (Seasonal Snow Bias Strength) float 0.55 0 1
+seasons_weather_snow_bias_threshold (Seasonal Snow Bias Chance Threshold) float 0.10 0 1
 seasons_melt_enable (Enable Seasonal Snow/Ice Melt) bool true
 seasons_melt_epoch_days (Seasonal Melt Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_melt_update_interval (Seasonal Melt Update Interval Seconds) float 2.0 0.1 60
@@ -38,3 +39,8 @@ seasons_melt_bg_budget (Seasonal Melt Background Node Change Budget Per Sweep) i
 seasons_melt_bg_radius (Seasonal Melt Background Sweep Radius Around Random Player) int 96 16 512
 seasons_melt_force_clear_pressure (Seasonal Melt Deterministic Clear Pressure Threshold) float 0.75 0 1
 seasons_melt_debug_log (Enable Seasonal Melt Debug Logging) bool false
+seasons_elevation_cooling_enable (Colder Weather At Higher Elevations) bool true
+seasons_elevation_cooling_base_y (Elevation Cooling Start Height) int 0 -1000 5000
+seasons_elevation_cooling_per_node (Thermal Drop Per Node Of Height) float 0.00125 0 0.05
+seasons_elevation_cooling_max (Maximum Elevation Thermal Drop) float 0.55 0 2
+seasons_elevation_cooling_floatland_y (Disable Elevation Cooling At Or Above This Height) int 1000 -1000 40000
