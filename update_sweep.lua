@@ -42,11 +42,13 @@ function seasons.update_sweep.build_offsets(radius, vertical_radius)
 	for distance = 0, extent do
 		local ymax = math.min(distance, vextent)
 		for yi = 0, ymax * 2 do
+			-- math.floor, not "//": Luanti runs LuaJIT (Lua 5.1), where the
+			-- integer division operator is a syntax error.
 			local y = 0
 			if yi % 2 == 1 then
-				y = -((yi + 1) // 2)
+				y = -math.floor((yi + 1) / 2)
 			elseif yi > 0 then
-				y = yi // 2
+				y = math.floor(yi / 2)
 			end
 			for x = -distance, distance do
 				for z = -distance, distance do
