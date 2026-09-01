@@ -66,23 +66,21 @@ local function maybe_spawn_flower(pos, ctx, force, target_density, current_densi
 	return true
 end
 
-local function process_player_area(player, budget, force)
+local function process_area(p1, p2, sample_pos, budget, force)
 	if budget <= 0 then return 0 end
-
-	local ppos = vector.round(player:get_pos())
-	local r = seasons.config.flower_scan_radius
-	local p1 = {x = ppos.x - r, y = ppos.y - r, z = ppos.z - r}
-	local p2 = {x = ppos.x + r, y = ppos.y + r, z = ppos.z + r}
-
-	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(ppos)
-	if not state or not ctx then return 0 end
-	if not seasons.compat_voxelibre.is_temperate_flower_biome(ctx) then
-		return 0
-	end
 
 	local flowers = minetest.find_nodes_in_area(p1, p2, MANAGED_FLOWERS)
 	local grounds = minetest.find_nodes_in_area_under_air(p1, p2, seasons.flowers_plan.ground_nodes)
 	if #grounds == 0 then
+		return 0
+	end
+
+	-- Sample the biome on real ground. A geometric box centre is usually
+	-- underground or in mid-air, which reads a different biome than the
+	-- spots we would actually plant on.
+	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(sample_pos or grounds[1])
+	if not state or not ctx then return 0 end
+	if not seasons.compat_voxelibre.is_temperate_flower_biome(ctx) then
 		return 0
 	end
 
@@ -121,7 +119,19 @@ local function process_player_area(player, budget, force)
 end
 
 function seasons.flowers_update.process_player_area(player, budget, force)
-	return process_player_area(player, budget, force)
+	local pos = vector.round(player:get_pos())
+	local r = seasons.config.flower_scan_radius
+	return process_area(
+		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+		pos,
+		budget,
+		force
+	)
+end
+
+function seasons.flowers_update.process_area(p1, p2, budget, force)
+	return process_area(p1, p2, nil, budget, force)
 end
 
 minetest.register_globalstep(function(dtime)
@@ -150,7 +160,7 @@ minetest.register_globalstep(function(dtime)
 	for i = 0, #players - 1 do
 		if budget <= 0 then break end
 		local idx = ((start + i - 1) % #players) + 1
-		budget = budget - process_player_area(players[idx], budget, false)
+		budget = budget - seasons.flowers_update.process_player_area(players[idx], budget, false)
 	end
 
 	seasons.flowers_update.player_cursor = start + 1
@@ -158,3 +168,10 @@ minetest.register_globalstep(function(dtime)
 		seasons.flowers_update.player_cursor = 1
 	end
 end)
+
+seasons.update_sweep.register_provider("flowers", {
+	enabled = function() return seasons.config.flower_sweep_enable end,
+	radius = function() return seasons.config.update_radius end,
+	budget = function() return seasons.config.flower_update_budget end,
+	process_area = seasons.flowers_update.process_area,
+})

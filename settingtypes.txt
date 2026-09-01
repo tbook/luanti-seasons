@@ -1,5 +1,9 @@
 seasons_year_days (Season Year Length In In-Game Days) int 20 4 10000
 seasons_debug_log (Enable Seasons Debug Logging) bool false
+seasons_update_radius (Seasonal Visual Update Radius) int 96 16 512
+seasons_update_radius_vertical (Seasonal Visual Update Vertical Radius) int 32 16 512
+seasons_update_sweep_interval (Far-Area Sweep Interval Seconds) float 1.0 0.1 60
+seasons_update_mapblocks_per_step (Far-Area Mapblocks Per Subsystem Per Sweep Step) int 8 1 128
 seasons_leaf_epoch_days (Leaf Recolor Epoch Length In In-Game Days) float 0.4 0.1 100
 seasons_leaf_update_interval (Leaf Update Interval Seconds) float 2.0 0.1 60
 seasons_leaf_update_budget (Leaf Node Swaps Per Tick Budget) int 160 1 5000
@@ -12,6 +16,7 @@ seasons_flower_epoch_days (Flower Update Epoch Length In In-Game Days) float 0.4
 seasons_flower_update_interval (Flower Update Interval Seconds) float 2.0 0.1 60
 seasons_flower_update_budget (Flower Node Change Budget Per Tick) int 120 1 5000
 seasons_flower_scan_radius (Flower Scan Radius Around Player) int 24 4 96
+seasons_flower_sweep_enable (Update And Spawn Flowers In Far Areas) bool true
 seasons_flower_dormancy_enable (Enable Seasonal Flower Dormancy Swaps) bool true
 seasons_flower_dormancy_epoch_days (Flower Dormancy Epoch Length In In-Game Days) float 0.4 0.1 100
 seasons_flower_dormancy_update_interval (Flower Dormancy Update Interval Seconds) float 1.0 0.1 60

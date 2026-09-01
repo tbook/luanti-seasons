@@ -254,14 +254,9 @@ local function apply_at_pos(pos, node, force)
 	return changed
 end
 
-local function process_player_area(player, budget, force)
+local function process_area(p1, p2, budget, force)
 	if budget <= 0 then return 0 end
 	if #TRACKED == 0 then return 0 end
-
-	local pos = vector.round(player:get_pos())
-	local r = seasons.config.flower_dormancy_scan_radius
-	local p1 = {x = pos.x - r, y = pos.y - r, z = pos.z - r}
-	local p2 = {x = pos.x + r, y = pos.y + r, z = pos.z + r}
 
 	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
 	if #nodes == 0 then return 0 end
@@ -284,7 +279,18 @@ local function process_player_area(player, budget, force)
 end
 
 function seasons.flower_dormancy.process_player_area(player, budget, force)
-	return process_player_area(player, budget, force)
+	local pos = vector.round(player:get_pos())
+	local r = seasons.config.flower_dormancy_scan_radius
+	return process_area(
+		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+		budget,
+		force
+	)
+end
+
+function seasons.flower_dormancy.process_area(p1, p2, budget, force)
+	return process_area(p1, p2, budget, force)
 end
 
 register_all()
@@ -315,7 +321,7 @@ minetest.register_globalstep(function(dtime)
 	for i = 0, #players - 1 do
 		if budget <= 0 then break end
 		local idx = ((start + i - 1) % #players) + 1
-		budget = budget - process_player_area(players[idx], budget, false)
+		budget = budget - seasons.flower_dormancy.process_player_area(players[idx], budget, false)
 	end
 
 	seasons.flower_dormancy.player_cursor = start + 1
@@ -335,4 +341,11 @@ minetest.register_lbm({
 		end
 		apply_at_pos(pos, node, false)
 	end,
+})
+
+seasons.update_sweep.register_provider("flower_dormancy", {
+	enabled = function() return seasons.config.flower_dormancy_enable end,
+	radius = function() return seasons.config.update_radius end,
+	budget = function() return seasons.config.flower_dormancy_update_budget end,
+	process_area = seasons.flower_dormancy.process_area,
 })
