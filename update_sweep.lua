@@ -12,10 +12,14 @@ seasons.update_sweep = {
 
 local MAPBLOCK_SIZE = 16
 
--- How far a player must jump before sweep progress is treated as worthless.
--- Ordinary walking keeps its cursor so the frontier can still reach the
--- configured radius; a teleport restarts near-to-far from the new position.
-local RE_ANCHOR_MAPBLOCKS = 4
+-- A restart throws away sweep progress to re-cover near-to-far, which is right
+-- after a teleport and ruinous otherwise. The threshold is expressed in nodes
+-- and set above any speed a player can travel under their own power, because
+-- continuous movement that trips it restarts the sweep every single step and
+-- collapses its reach to the innermost shell. The cooldown bounds the damage
+-- if the threshold is ever wrong.
+local TELEPORT_NODES = 256
+local RESTART_COOLDOWN_US = 10 * 1000000
 
 local function block_pos(pos)
 	return {
@@ -25,7 +29,7 @@ local function block_pos(pos)
 	}
 end
 
-local function block_distance(a, b)
+local function node_distance(a, b)
 	return math.max(math.abs(a.x - b.x), math.abs(a.y - b.y), math.abs(a.z - b.z))
 end
 
@@ -69,12 +73,14 @@ end
 
 local function state_for_player(player)
 	local name = player:get_player_name()
-	local anchor = block_pos(vector.round(player:get_pos()))
+	local pos = vector.round(player:get_pos())
+	local anchor = block_pos(pos)
 	local state = seasons.update_sweep.player_states[name]
 
 	if not state then
 		state = {
 			anchor = anchor,
+			pos = pos,
 			cursors = {},
 			next_runs = {},
 			cycle_started = minetest.get_us_time(),
@@ -83,15 +89,19 @@ local function state_for_player(player)
 		return state
 	end
 
-	local moved = block_distance(anchor, state.anchor)
-	if moved > 0 then
-		-- Offsets are player-relative, so the cursor stays meaningful when the
-		-- anchor shifts. Keeping it is what lets a walking player's frontier
-		-- reach the configured radius instead of restarting every 16 nodes.
-		state.anchor = anchor
-		if moved >= RE_ANCHOR_MAPBLOCKS then
+	local moved_nodes = node_distance(pos, state.pos)
+	state.anchor = anchor
+	state.pos = pos
+
+	-- Offsets are player-relative, so the cursor stays meaningful when the
+	-- anchor shifts. Keeping it is what lets a moving player's frontier reach
+	-- the configured radius instead of restarting at the centre.
+	if moved_nodes >= TELEPORT_NODES then
+		local now = minetest.get_us_time()
+		if now >= (state.restart_allowed_at or 0) then
 			state.cursors = {}
-			state.cycle_started = minetest.get_us_time()
+			state.cycle_started = now
+			state.restart_allowed_at = now + RESTART_COOLDOWN_US
 		end
 	end
 	return state

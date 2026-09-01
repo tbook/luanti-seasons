@@ -135,11 +135,27 @@ describe("seasons.update_sweep", function()
 		now = 1000000
 		globalstep(1)
 
-		-- Four mapblocks or more reads as a teleport; old progress is worthless.
-		player_pos = {x = 96, y = 0, z = 0}
+		-- Only a jump past any travellable distance reads as a teleport.
+		player_pos = {x = 4096, y = 0, z = 0}
 		now = 2000000
 		globalstep(1)
-		assert.are.same({x = 96, y = 0, z = 0}, areas[9])
+		assert.are.same({x = 4096, y = 0, z = 0}, areas[9])
+	end)
+
+	it("does not restart while the player flies fast and continuously", function()
+		local areas = {}
+		track_areas(areas)
+		seasons.update_sweep.install()
+
+		-- 100 nodes/s is well past any fly speed, and must still read as travel:
+		-- restarting every step collapses the sweep onto the innermost shell.
+		for t = 1, 60 do
+			now = t * 1000000
+			player_pos = {x = t * 100, y = 0, z = 0}
+			globalstep(1)
+		end
+		-- The cursor must have advanced far past the first shells.
+		assert.is_true(seasons.update_sweep.player_states["tester"].cursors["test"] > 400)
 	end)
 
 	it("does not step past mapblocks it could not afford to process", function()
