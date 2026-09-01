@@ -33,6 +33,7 @@ seasons.config.flower_dormancy_transition_days = tonumber(minetest.settings:get(
 seasons.config.weather_bias_enable = minetest.settings:get_bool("seasons_weather_bias_enable", true)
 seasons.config.weather_epoch_days = tonumber(minetest.settings:get("seasons_weather_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.005)
 seasons.config.weather_snow_bias_strength = tonumber(minetest.settings:get("seasons_weather_snow_bias_strength")) or 0.55
+seasons.config.weather_snow_bias_threshold = tonumber(minetest.settings:get("seasons_weather_snow_bias_threshold")) or 0.10
 
 seasons.config.elevation_cooling_enable = minetest.settings:get_bool("seasons_elevation_cooling_enable", true)
 seasons.config.elevation_cooling_base_y = tonumber(minetest.settings:get("seasons_elevation_cooling_base_y")) or 0

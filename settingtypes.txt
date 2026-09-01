@@ -26,6 +26,7 @@ seasons_flower_dormancy_transition_days (Flower Dormancy Spring Recovery Window 
 seasons_weather_bias_enable (Enable Seasonal Weather Snow Bias) bool true
 seasons_weather_epoch_days (Weather Bias Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_weather_snow_bias_strength (Seasonal Snow Bias Strength) float 0.55 0 1
+seasons_weather_snow_bias_threshold (Seasonal Snow Bias Chance Threshold) float 0.10 0 1
 seasons_melt_enable (Enable Seasonal Snow/Ice Melt) bool true
 seasons_melt_epoch_days (Seasonal Melt Epoch Length In In-Game Days) float 0.1 0.1 20
 seasons_melt_update_interval (Seasonal Melt Update Interval Seconds) float 2.0 0.1 60
