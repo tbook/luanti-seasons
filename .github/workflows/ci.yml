@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua and LuaRocks
+        uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: "5.1"
+
+      - uses: leafo/gh-actions-luarocks@v5
+
+      - name: Install tooling
+        run: |
+          luarocks install luacheck
+          luarocks install busted
+
+      - name: Luacheck
+        run: luacheck .
+
+      - name: Busted
+        run: busted spec

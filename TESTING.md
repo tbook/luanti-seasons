@@ -43,6 +43,9 @@ luacheck .
 busted spec
 ```
 
+CI runs both on every push to `main` and every pull request
+(`.github/workflows/ci.yml`).
+
 ## Future additions
 
 Useful follow-on tests:

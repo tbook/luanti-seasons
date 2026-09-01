@@ -1,5 +1,7 @@
 # seasons
 
+[![CI](https://github.com/tbook/luanti-seasons/actions/workflows/ci.yml/badge.svg)](https://github.com/tbook/luanti-seasons/actions/workflows/ci.yml)
+
 Smooth biome-driven seasons for VoxeLibre/Luanti.
 
 ## Status
