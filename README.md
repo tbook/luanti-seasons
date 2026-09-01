@@ -37,7 +37,7 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - Epoch-based updates for slow seasonal progression (configurable days per epoch).
 - LBM on block load updates leaves only when their stored epoch is stale.
 - Periodic player-proximate leaf/grass updates run continuously with budgeted batches.
-- Leaf background sweeper gradually catches up loaded far-away areas.
+- Deterministic near-to-far sweeper catches up all loaded seasonal scenery within 96 nodes by default.
 - Spring flower controller (temperate biomes only):
   - spawns in spring, thins in summer, drops near zero in fall
   - excludes Nether/End and beach/ocean biome variants
@@ -67,6 +67,8 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 
 - `/seasons_state`
   - Show current phase, derived season, biome and state values at your position.
+- `/seasons_update_status`
+  - Show the configured far-area radius, sweep progress, loaded-block counts, and last cycle time.
 - `/seasons_species_state`
   - Show oak/dark oak/birch/spruce seasonal weights side-by-side at your position.
 - `/seasons_set_day <day_float>`
@@ -110,6 +112,12 @@ Prototype: seasonal foliage, spring flowers, and weather snow-bias hooks are act
 - `commands.lua`
 - `settingtypes.txt`
 - `mod.conf`
+
+## Update Distance And Performance
+
+`seasons_update_radius` controls how far loaded seasonal scenery is kept current around players. It defaults to 96 nodes. The sweeper visits 16-node mapblocks nearest-first and never loads terrain solely to update it.
+
+For lower-resource servers, reduce the radius or `seasons_update_mapblocks_per_step`. That setting is applied to each enabled subsystem. For longer viewing distances, increase the radius and raise the mapblocks-per-step value only if profiling shows sufficient headroom. `seasons_update_sweep_interval` controls how frequently batches run. Existing foreground radius and mutation-budget settings remain available for per-system tuning; explicitly configured leaf and melt background settings continue to override the shared defaults for those systems.
 
 ## License
 

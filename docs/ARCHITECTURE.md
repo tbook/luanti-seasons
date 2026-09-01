@@ -27,5 +27,5 @@
 - Flower dormancy adaptation: active prototype swapping non-managed flowers to/from dormant winter stumps.
 - Weather adaptation: active prototype for seasonal snow bias via weather compatibility hook.
 - Melt adaptation: active prototype for seasonal spring melt + summer clear with load-time correction.
-- Updater: periodic player-area scans with budget controls plus background sweepers for loaded far areas.
+- Updater: fast player-area scans plus a deterministic, budgeted mapblock sweep for loaded far areas. Each subsystem keeps an independent cursor and cadence; unloaded mapblocks are skipped rather than emerged.
 - Commands: active (state/set/force commands for foliage, flowers, dormancy, weather, and melt).

@@ -1,6 +1,5 @@
 seasons.leaf_update = {
 	accum = 0,
-	bg_accum = 0,
 	player_cursor = 1,
 }
 
@@ -70,13 +69,8 @@ local function apply_at_pos(pos, node, force)
 	return false
 end
 
-local function process_player_area(player, budget, force)
+local function process_area(p1, p2, budget, force)
 	if budget <= 0 then return 0 end
-
-	local pos = vector.round(player:get_pos())
-	local r = seasons.config.leaf_scan_radius
-	local p1 = {x = pos.x - r, y = pos.y - r, z = pos.z - r}
-	local p2 = {x = pos.x + r, y = pos.y + r, z = pos.z + r}
 
 	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
 	if #nodes == 0 then return 0 end
@@ -99,43 +93,19 @@ local function process_player_area(player, budget, force)
 	return touched
 end
 
-local function process_random_loaded_area(players, budget, force)
-	if budget <= 0 or #players == 0 then return 0 end
-
-	local player = players[math.random(1, #players)]
-	local p = vector.round(player:get_pos())
-	local r = math.max(16, seasons.config.leaf_bg_radius)
-	local ar = math.max(16, math.floor(r * 0.40))
-	local cx = p.x + math.random(-r, r)
-	local cz = p.z + math.random(-r, r)
-	local cy = p.y + math.random(-math.floor(ar * 0.5), math.floor(ar * 0.5))
-	local center = {x = cx, y = cy, z = cz}
-	local p1 = {x = center.x - ar, y = center.y - ar, z = center.z - ar}
-	local p2 = {x = center.x + ar, y = center.y + ar, z = center.z + ar}
-
-	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
-	if #nodes == 0 then return 0 end
-
-	local touched = 0
-	local checks_left = math.min(#nodes, budget * 10)
-	local start = math.random(1, #nodes)
-	for i = 0, checks_left - 1 do
-		local idx = ((start + i - 1) % #nodes) + 1
-		local npos = nodes[idx]
-		local node = minetest.get_node(npos)
-		if apply_at_pos(npos, node, force) then
-			touched = touched + 1
-			if touched >= budget then
-				break
-			end
-		end
-	end
-
-	return touched
+function seasons.leaf_update.process_player_area(player, budget, force)
+	local pos = vector.round(player:get_pos())
+	local r = seasons.config.leaf_scan_radius
+	return process_area(
+		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+		budget,
+		force
+	)
 end
 
-function seasons.leaf_update.process_player_area(player, budget, force)
-	return process_player_area(player, budget, force)
+function seasons.leaf_update.process_area(p1, p2, budget, force)
+	return process_area(p1, p2, budget, force)
 end
 
 minetest.register_globalstep(function(dtime)
@@ -148,14 +118,6 @@ minetest.register_globalstep(function(dtime)
 	local players = minetest.get_connected_players()
 	if #players == 0 then
 		return
-	end
-
-	if seasons.config.leaf_bg_enable then
-		seasons.leaf_update.bg_accum = seasons.leaf_update.bg_accum + dtime
-		if seasons.leaf_update.bg_accum >= seasons.config.leaf_bg_interval then
-			seasons.leaf_update.bg_accum = 0
-			process_random_loaded_area(players, seasons.config.leaf_bg_budget, false)
-		end
 	end
 
 	local budget = seasons.config.leaf_update_budget
@@ -183,4 +145,12 @@ minetest.register_lbm({
 		-- Only touches leaves when epoch changed for that node.
 		apply_at_pos(pos, node, false)
 	end,
+})
+
+seasons.update_sweep.register_provider("leaves", {
+	enabled = function() return seasons.config.leaf_bg_enable end,
+	radius = function() return seasons.config.leaf_bg_radius_override or seasons.config.update_radius end,
+	interval = function() return seasons.config.leaf_bg_interval_override or seasons.config.update_sweep_interval end,
+	budget = function() return seasons.config.leaf_bg_budget end,
+	process_area = seasons.leaf_update.process_area,
 })

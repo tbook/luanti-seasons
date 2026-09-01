@@ -66,15 +66,9 @@ local function maybe_spawn_flower(pos, ctx, force, target_density, current_densi
 	return true
 end
 
-local function process_player_area(player, budget, force)
+local function process_area(p1, p2, sample_pos, budget, force)
 	if budget <= 0 then return 0 end
-
-	local ppos = vector.round(player:get_pos())
-	local r = seasons.config.flower_scan_radius
-	local p1 = {x = ppos.x - r, y = ppos.y - r, z = ppos.z - r}
-	local p2 = {x = ppos.x + r, y = ppos.y + r, z = ppos.z + r}
-
-	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(ppos)
+	local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(sample_pos)
 	if not state or not ctx then return 0 end
 	if not seasons.compat_voxelibre.is_temperate_flower_biome(ctx) then
 		return 0
@@ -121,7 +115,24 @@ local function process_player_area(player, budget, force)
 end
 
 function seasons.flowers_update.process_player_area(player, budget, force)
-	return process_player_area(player, budget, force)
+	local pos = vector.round(player:get_pos())
+	local r = seasons.config.flower_scan_radius
+	return process_area(
+		{x = pos.x - r, y = pos.y - r, z = pos.z - r},
+		{x = pos.x + r, y = pos.y + r, z = pos.z + r},
+		pos,
+		budget,
+		force
+	)
+end
+
+function seasons.flowers_update.process_area(p1, p2, budget, force)
+	local center = {
+		x = math.floor((p1.x + p2.x) / 2),
+		y = math.floor((p1.y + p2.y) / 2),
+		z = math.floor((p1.z + p2.z) / 2),
+	}
+	return process_area(p1, p2, center, budget, force)
 end
 
 minetest.register_globalstep(function(dtime)
@@ -158,3 +169,10 @@ minetest.register_globalstep(function(dtime)
 		seasons.flowers_update.player_cursor = 1
 	end
 end)
+
+seasons.update_sweep.register_provider("flowers", {
+	enabled = function() return true end,
+	radius = function() return seasons.config.update_radius end,
+	budget = function() return seasons.config.flower_update_budget end,
+	process_area = seasons.flowers_update.process_area,
+})

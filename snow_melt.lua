@@ -1,6 +1,5 @@
 seasons.snow_melt = {
 	accum = 0,
-	bg_accum = 0,
 	debug_heartbeat = 0,
 	player_cursor = 1,
 	last_epoch = nil,
@@ -220,27 +219,10 @@ local function process_player_area(player, budget, force)
 	return touched
 end
 
-local function process_random_loaded_area(players, budget, force)
-	if budget <= 0 or #players == 0 then
-		return 0
-	end
-
-	local player = players[math.random(1, #players)]
-	local p = vector.round(player:get_pos())
-	local r = math.max(16, seasons.config.melt_bg_radius)
-	local ar = math.max(16, math.floor(r * 0.40))
-	local cx = p.x + math.random(-r, r)
-	local cz = p.z + math.random(-r, r)
-	local cy = p.y + math.random(-math.floor(ar * 0.5), math.floor(ar * 0.5))
-	local center = {x = cx, y = cy, z = cz}
-	local p1 = {x = center.x - ar, y = center.y - ar, z = center.z - ar}
-	local p2 = {x = center.x + ar, y = center.y + ar, z = center.z + ar}
-
+local function process_area(p1, p2, budget, force)
+	if budget <= 0 then return 0 end
 	local nodes = minetest.find_nodes_in_area(p1, p2, TRACKED)
-	if #nodes == 0 then
-		mlog(string.format("bg epoch=%d y=%.3f center=(%d,%d,%d) ar=%d nodes=0 budget=%d", seasons.model.current_melt_epoch(), seasons.model.current_year_pos(), center.x, center.y, center.z, ar, budget))
-		return 0
-	end
+	if #nodes == 0 then return 0 end
 
 	local touched = 0
 	local checks_left = math.min(#nodes, budget * 10)
@@ -248,43 +230,20 @@ local function process_random_loaded_area(players, budget, force)
 	for i = 0, checks_left - 1 do
 		local idx = ((start + i - 1) % #nodes) + 1
 		local npos = nodes[idx]
-		local node = minetest.get_node(npos)
-		if apply_at_pos(npos, node, force) then
+		if apply_at_pos(npos, minetest.get_node(npos), force) then
 			touched = touched + 1
-			if touched >= budget then
-				break
-			end
+			if touched >= budget then break end
 		end
 	end
-
-	if touched == 0 and seasons.config.melt_debug_log then
-		local state, ctx = seasons.compat_voxelibre.sample_state_at_pos(nodes[1])
-		if state and ctx then
-			local y = seasons.model.current_year_pos()
-			mlog(string.format(
-				"bg epoch=%d y=%.3f center=(%d,%d,%d) ar=%d nodes=%d checks=%d changed=0 biome=%s thermal=%.3f pressure=%.3f peak_summer=%s permanent=%s",
-				seasons.model.current_melt_epoch(),
-				y,
-				center.x, center.y, center.z,
-				ar,
-				#nodes,
-				checks_left,
-				ctx.name or "?",
-				state.thermal or 0,
-				melt_pressure(state, y),
-				tostring(is_peak_summer(state, y)),
-				tostring(seasons.weather_plan.is_permanent_snow_biome(ctx))
-			))
-		end
-	else
-		mlog(string.format("bg epoch=%d y=%.3f center=(%d,%d,%d) ar=%d nodes=%d checks=%d changed=%d", seasons.model.current_melt_epoch(), seasons.model.current_year_pos(), center.x, center.y, center.z, ar, #nodes, checks_left, touched))
-	end
-
 	return touched
 end
 
 function seasons.snow_melt.process_player_area(player, budget, force)
 	return process_player_area(player, budget, force)
+end
+
+function seasons.snow_melt.process_area(p1, p2, budget, force)
+	return process_area(p1, p2, budget, force)
 end
 
 minetest.register_globalstep(function(dtime)
@@ -316,14 +275,6 @@ minetest.register_globalstep(function(dtime)
 		if seasons.snow_melt.debug_heartbeat >= 15 then
 			seasons.snow_melt.debug_heartbeat = 0
 			mlog(string.format("heartbeat players=%d year_pos=%.3f melt_epoch=%d", #players, seasons.model.current_year_pos(), seasons.model.current_melt_epoch()))
-		end
-	end
-
-	if seasons.config.melt_bg_enable then
-		seasons.snow_melt.bg_accum = seasons.snow_melt.bg_accum + dtime
-		if seasons.snow_melt.bg_accum >= seasons.config.melt_bg_interval then
-			seasons.snow_melt.bg_accum = 0
-			process_random_loaded_area(players, seasons.config.melt_bg_budget, false)
 		end
 	end
 
@@ -363,4 +314,12 @@ minetest.register_lbm({
 		end
 		apply_at_pos(pos, node, false)
 	end,
+})
+
+seasons.update_sweep.register_provider("snow_melt", {
+	enabled = function() return seasons.config.melt_enable and seasons.config.melt_bg_enable end,
+	radius = function() return seasons.config.melt_bg_radius_override or seasons.config.update_radius end,
+	interval = function() return seasons.config.melt_bg_interval_override or seasons.config.update_sweep_interval end,
+	budget = function() return seasons.config.melt_bg_budget end,
+	process_area = seasons.snow_melt.process_area,
 })

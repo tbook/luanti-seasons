@@ -1,5 +1,26 @@
 seasons.commands = {}
 
+minetest.register_chatcommand("seasons_update_status", {
+	params = "",
+	description = "Show seasonal far-area update progress and configuration.",
+	func = function()
+		local st = seasons.update_sweep.status()
+		return true, string.format(
+			"radius=%d interval=%.2fs mapblocks_per_step=%d progress=%d/%d players=%d checked=%d loaded=%d cycles=%d last_cycle=%.1fs",
+			st.radius,
+			st.interval,
+			st.mapblocks_per_step,
+			st.progress_mapblock,
+			st.mapblocks_per_cycle,
+			st.tracked_players,
+			st.mapblocks_checked,
+			st.mapblocks_loaded,
+			st.cycles_completed,
+			st.last_cycle_seconds
+		)
+	end,
+})
+
 local function season_label_from_weights(weights)
 	local best, bestv = "summer", -1
 	for name, v in pairs(weights) do

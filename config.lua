@@ -2,6 +2,9 @@ seasons.config = {}
 
 seasons.config.year_days = tonumber(minetest.settings:get("seasons_year_days")) or 20
 seasons.config.debug_log = minetest.settings:get_bool("seasons_debug_log", false)
+seasons.config.update_radius = math.max(16, math.min(512, tonumber(minetest.settings:get("seasons_update_radius")) or 96))
+seasons.config.update_sweep_interval = math.max(0.1, tonumber(minetest.settings:get("seasons_update_sweep_interval")) or 1.0)
+seasons.config.update_mapblocks_per_step = math.max(1, math.floor(tonumber(minetest.settings:get("seasons_update_mapblocks_per_step")) or 8))
 seasons.config.leaf_epoch_days = tonumber(minetest.settings:get("seasons_leaf_epoch_days")) or math.max(0.1, seasons.config.year_days * 0.02)
 
 seasons.config.leaf_update_interval = tonumber(minetest.settings:get("seasons_leaf_update_interval")) or 2.0
@@ -9,8 +12,10 @@ seasons.config.leaf_update_budget = tonumber(minetest.settings:get("seasons_leaf
 seasons.config.leaf_scan_radius = tonumber(minetest.settings:get("seasons_leaf_scan_radius")) or 24
 seasons.config.leaf_bg_enable = minetest.settings:get_bool("seasons_leaf_bg_enable", true)
 seasons.config.leaf_bg_interval = tonumber(minetest.settings:get("seasons_leaf_bg_interval")) or 12.0
+seasons.config.leaf_bg_interval_override = tonumber(minetest.settings:get("seasons_leaf_bg_interval"))
 seasons.config.leaf_bg_budget = tonumber(minetest.settings:get("seasons_leaf_bg_budget")) or 100
 seasons.config.leaf_bg_radius = tonumber(minetest.settings:get("seasons_leaf_bg_radius")) or 96
+seasons.config.leaf_bg_radius_override = tonumber(minetest.settings:get("seasons_leaf_bg_radius"))
 
 seasons.config.flower_epoch_days = tonumber(minetest.settings:get("seasons_flower_epoch_days")) or seasons.config.leaf_epoch_days
 seasons.config.flower_update_interval = tonumber(minetest.settings:get("seasons_flower_update_interval")) or 2.0
@@ -35,8 +40,10 @@ seasons.config.melt_scan_radius = tonumber(minetest.settings:get("seasons_melt_s
 seasons.config.melt_in_snowy_biomes = minetest.settings:get_bool("seasons_melt_in_snowy_biomes", false)
 seasons.config.melt_bg_enable = minetest.settings:get_bool("seasons_melt_bg_enable", true)
 seasons.config.melt_bg_interval = tonumber(minetest.settings:get("seasons_melt_bg_interval")) or 12.0
+seasons.config.melt_bg_interval_override = tonumber(minetest.settings:get("seasons_melt_bg_interval"))
 seasons.config.melt_bg_budget = tonumber(minetest.settings:get("seasons_melt_bg_budget")) or 80
 seasons.config.melt_bg_radius = tonumber(minetest.settings:get("seasons_melt_bg_radius")) or 96
+seasons.config.melt_bg_radius_override = tonumber(minetest.settings:get("seasons_melt_bg_radius"))
 seasons.config.melt_force_clear_pressure = tonumber(minetest.settings:get("seasons_melt_force_clear_pressure")) or 0.75
 seasons.config.melt_debug_log = minetest.settings:get_bool("seasons_melt_debug_log", false)
 
